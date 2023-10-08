@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+  db_streaming:
+    container_name: db_streaming
+    ports:
+      - "${BD_PORT}:5432"
+    environment:
+      - POSTGRES_USER=${BD_USERNAME}
+      - POSTGRES_PASSWORD=${BD_PASSWORD}
+    image: postgres:15.0-alpine3.16 
