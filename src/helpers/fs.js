@@ -10,6 +10,16 @@ const deleteFile = (imageName)=>{
     });
 }
 
+const createImages = ()=>{
+    if(fs.existsSync(DIR))return;
+    fs.mkdir(DIR, (err) => {
+        if (err) {
+            throw err;
+        }
+    });
+}
+
 module.exports = {
-    deleteFile
+    deleteFile,
+    createImages
 }
