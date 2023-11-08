@@ -13,6 +13,9 @@ module.exports = new EntitySchema({
         password: {
             type: "text",
         },
+        streamKey:{
+            type: "text",
+        },
         image:{
             type: "text",
             nullable: true

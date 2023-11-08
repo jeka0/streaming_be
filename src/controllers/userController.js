@@ -30,6 +30,17 @@ async function getUser(req, res){
     }).catch((err)=>res.status(400).send(err.message));
 }
 
+async function getUserByLogin(req, res){
+    const { login } = req.body;
+
+    userService.getUserByLogin(login)
+    .then((user)=>{
+        const { password, ...userData } = user;
+
+        res.send(userData);
+    }).catch((err)=>res.status(400).send(err.message));
+}
+
 async function getCurrentUser(req, res){
     const userId = req.userId;
     userService.getUserByID(userId)
@@ -60,5 +71,6 @@ module.exports = {
     searchUser,
     getUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getUserByLogin
 };

@@ -28,6 +28,16 @@ async function createUser(user){
 
     return user;
  }
+
+ async function getUserByStreamKey(streamKey){
+  const user = await userAccess.getUserByStreamKey(streamKey);
+  
+  if(!user){
+    throw new Error("User is not found");
+  }
+
+  return user;
+}
  
  async function getUserByLogin(login){
     return await userAccess.getUserByLogin(login);
@@ -65,6 +75,7 @@ async function createUser(user){
      getUserByID,
      getUserByLogin,
      deleteCurrentUser,
-     updateCurrentUser
+     updateCurrentUser,
+     getUserByStreamKey
  };
 

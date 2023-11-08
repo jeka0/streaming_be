@@ -1,37 +1,45 @@
 const EntitySchema = require('typeorm').EntitySchema
 module.exports = new EntitySchema({
-    name: "Chat",
+    name: "Stream",
     columns: {
         id: {
             primary: true,
             type: "int",
             generated: true 
         },
-        name: {
+        stream_title: {
             type: "text",
-            unique: true
+            nullable: true
         },
-        type: {
-            type: "text",
-            default: "public"
+        category:{
+            type: "text"
+        },
+        start_time:{
+            type: "timestamp"
+        },
+        end_time:{
+            type: "timestamp",
+            nullable: true
+        },
+        viewer_count:{
+            type: "int",
+            default: 0
         }
     },
     relations: {
-        users: {
+        user: {
             target: "User",
-            type: "many-to-many",
+            type: "many-to-one",
             joinTable: true,
             cascade: true,
         },
-        stream: {
-            target: "Stream",
+        chat: {
+            target: "Chat",
             type: "one-to-one",
             joinTable: true,
-            cascade: true,
-            inverseSide: 'chat',
-            onDelete: "cascade",
+            mappedBy: 'stream',
             joinColumn: {
-                name: 'stream_id',
+                name: 'chat_id',
                 referencedColumnName: 'id',
             }
         }

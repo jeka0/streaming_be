@@ -22,6 +22,10 @@ async function getUserByID(id){
     return await userRep.findOneBy({ id })
 }
 
+async function getUserByStreamKey(streamKey){
+    return await userRep.findOneBy({ streamKey })
+}
+
 async function getUserByLogin(login){
     return await userRep.findOneBy({ login })
 }
@@ -41,5 +45,6 @@ module.exports = {
     getUserByID,
     getUserByLogin,
     deleteUser,
-    updateUser
+    updateUser,
+    getUserByStreamKey
 };

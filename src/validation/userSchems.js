@@ -6,6 +6,12 @@ const userId = {
     })
 }
 
+const userLogin = {
+    [Segments.BODY]: Joi.object().keys({
+        login: Joi.string().required()
+    })
+}
+
 const update = {
     [Segments.BODY]: Joi.object().keys({
         login: Joi.string(),
@@ -20,4 +26,4 @@ const getByName = {
     })
 }
 
-module.exports = { userId, update, getByName }
+module.exports = { userId, update, getByName, userLogin }
