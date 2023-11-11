@@ -21,4 +21,16 @@ module.exports = new EntitySchema({
             nullable: true
         }
     },
+    relations:{
+        chat: {
+            target: "Chat",
+            type: "one-to-one",
+            joinTable: true,
+            mappedBy: 'stream',
+            joinColumn: {
+                name: 'chat_id',
+                referencedColumnName: 'id',
+            }
+        }
+    }
 })

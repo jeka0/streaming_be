@@ -4,6 +4,7 @@ const router = require("./routes/router.js");
 const bodyParser = require('body-parser');
 const { AppDataSource } = require("./repositories/DataSource.js")
 const node_media_server = require('./additionalServers/media_server');
+//const thumbnail_generator = require('./additionalServers/thumbnails.js')
 require('dotenv').config();
 const { errors } = require('celebrate');
 const cors = require('cors');

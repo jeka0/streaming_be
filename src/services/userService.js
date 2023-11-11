@@ -1,10 +1,16 @@
 const userAccess = require("../repositories/userAccess");
 const { getHesh } = require("../helpers/encrypt"); 
 const { deleteFile } = require("../helpers/fs");
+const { createChat, updateChat } = require("./chatService");
 
 async function createUser(user){
     user.password = await getHesh(user.password);
-    userAccess.createUser(user);
+    const name = await getHesh(user.login.toString());
+    user.chat = await createChat({ name });
+    user.streamKey = "0h5143oc1";
+    const streamer = await userAccess.createUser(user);
+
+    await updateChat( user.chat.id,{ streamer });
  }
  
  async function getAllUsers(){

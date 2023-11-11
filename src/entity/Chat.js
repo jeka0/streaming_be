@@ -23,15 +23,15 @@ module.exports = new EntitySchema({
             joinTable: true,
             cascade: true,
         },
-        stream: {
-            target: "Stream",
+        streamer: {
+            target: "User",
             type: "one-to-one",
             joinTable: true,
             cascade: true,
             inverseSide: 'chat',
             onDelete: "cascade",
             joinColumn: {
-                name: 'stream_id',
+                name: 'user_id',
                 referencedColumnName: 'id',
             }
         }

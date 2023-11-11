@@ -19,15 +19,30 @@ async function searchUser(text){
 }
 
 async function getUserByID(id){
-    return await userRep.findOneBy({ id })
+    return await userRep.findOne({  
+        where:{
+            id 
+        }, 
+        relations:['chat'] 
+    })
 }
 
 async function getUserByStreamKey(streamKey){
-    return await userRep.findOneBy({ streamKey })
+    return await userRep.findOne({ 
+        where:{
+            streamKey 
+        }, 
+        relations:['chat'] 
+     })
 }
 
 async function getUserByLogin(login){
-    return await userRep.findOneBy({ login })
+    return await userRep.findOne({ 
+        where:{
+            login 
+        }, 
+        relations:['chat'] 
+     })
 }
 
 async function deleteUser(id){
