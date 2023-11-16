@@ -1,5 +1,5 @@
 const streamAccess = require("../repositories/streamAccess");
-const { getUserByID } = require("./userService");
+const { getUserByID, getUserByStreamKey } = require("./userService");
 /*const { getHesh } = require("../helpers/encrypt");
 const { createChat, updateChat } = require("./chatService");*/
 
@@ -49,12 +49,15 @@ async function getLiveStreams()
     return streams;
 }
 
-async function getUserLiveStream(userId){
-    const streams = await streamAccess.getLiveUserStreams(userId);
+async function getLiveStreamByKey(streamKey){
+    const user = await getUserByStreamKey(streamKey);
+    const streams = await streamAccess.getLiveUserStreams(user.id);
 
     if(streams.length === 0){
         throw new Error("Stream not found");
     }
+
+    deleteInfo(streams[0]);
 
     return streams[0];
 }
@@ -132,5 +135,5 @@ module.exports = {
     paginationLive,
     paginationUser,
     finishStream,
-    getUserLiveStream
+    getLiveStreamByKey
 };

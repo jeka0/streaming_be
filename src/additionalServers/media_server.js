@@ -15,14 +15,11 @@ nms.on('prePublish', async (id, StreamPath, args) => {
     } else {
         streamSevice.createStream( user.id, { stream_title:"AAAAAAAAAA", category: "games" });
         console.log('[NodeEvent on prePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
+        delay(10000).then(() => {
+            let stream_key = getStreamKeyFromStreamPath(StreamPath);
+            generateStreamThumbnail(stream_key);
+        });
     }
-});
-
-nms.on('postPlay', async (id, StreamPath, args) =>{
-    delay(10000).then(() => {
-        let stream_key = getStreamKeyFromStreamPath(StreamPath);
-        generateStreamThumbnail(stream_key);
-    });
 });
 
 nms.on('donePublish', async (id, StreamPath, args) => {

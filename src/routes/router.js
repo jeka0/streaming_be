@@ -8,6 +8,7 @@ const streamRoutes = require("./streamRoutes.js");
 const { checkAuth } = require('../middlewares/checkAuth.js');
 
 router.use('/image', express.static('Images'));
+router.use('/thumbnail', express.static('server/thumbnails'));
 router.use('/auth', authRoutes);
 router.use('/user', checkAuth, userRoutes);
 router.use('/chat', checkAuth, chatRoutes);

@@ -13,7 +13,7 @@ const generateStreamThumbnail = (stream_key) => {
         '-f', 'mjpeg',
         `./server/thumbnails/${stream_key}.png`,
     ];
-
+    console.log(stream_key)
     const child = spawn(cmd, args);
 
     child.on('start', () => {
@@ -31,6 +31,12 @@ const generateStreamThumbnail = (stream_key) => {
       child.on('error', (err) => {
         console.error('Ошибка дочернего процесса:', err);
       });
+
+      child.on('close', (code) => {
+        console.log(
+            `детский процесс завершился с кодом ${code}`
+        );
+    });
 };
 
 module.exports = {

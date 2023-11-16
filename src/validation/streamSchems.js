@@ -20,6 +20,12 @@ const update = {
     }).required().min(1)
 }
 
+const byKey = {
+    [Segments.BODY]: Joi.object().keys({
+        streamKey: Joi.string().required()
+    })
+}
+
 const pagination = {
     [Segments.QUERY]: Joi.object().keys({
         page: Joi.number().required(),
@@ -31,5 +37,6 @@ module.exports = {
     id,
     update,
     create,
-    pagination
+    pagination,
+    byKey
 }

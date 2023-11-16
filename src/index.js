@@ -24,4 +24,5 @@ AppDataSource.initialize().then(()=>{
   server.listen(SOCKET_PORT, ()=>console.log(`The socket server is running on a port ${SOCKET_PORT}...`));
   app.listen(SERVER_PORT,()=>console.log(`The server is running on a port ${SERVER_PORT}...`));
   node_media_server.run();
+  //thumbnail_generator.start()
 }).catch((err)=>console.log("Database connection error (" + err + ")"));
