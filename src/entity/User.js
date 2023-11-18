@@ -19,6 +19,10 @@ module.exports = new EntitySchema({
         image:{
             type: "text",
             nullable: true
+        },
+        status:{
+            type: "boolean",
+            default: false
         }
     },
     relations:{
@@ -31,6 +35,12 @@ module.exports = new EntitySchema({
                 name: 'chat_id',
                 referencedColumnName: 'id',
             }
+        },
+        subscription: {
+            target: "User",
+            type: "many-to-many",
+            joinTable: true,
+            cascade: true,
         }
     }
 })

@@ -1,23 +1,10 @@
 const streamAccess = require("../repositories/streamAccess");
 const { getUserByID, getUserByStreamKey } = require("./userService");
-/*const { getHesh } = require("../helpers/encrypt");
-const { createChat, updateChat } = require("./chatService");*/
 
 async function createStream(userId, data){
     data.start_time = new Date();
     data.user = await getUserByID(userId);
-    /*const name = await getHesh(data.start_time.toString());
-    data.chat = await createChat({ name });*/
-
-    /*const stream = */await streamAccess.createStream(data);
-/*
-    await updateChat( data.chat.id,{ stream });
-
-    if(!stream){
-        throw new Error("Error creating stream");
-    }
-
-    return stream;*/
+    await streamAccess.createStream(data);
 }
 
 async function finishStream(userId){

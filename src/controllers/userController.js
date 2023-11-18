@@ -65,6 +65,24 @@ async function searchUser(req, res){
     .catch((err)=>res.status(400).send(err.message));
 }
 
+async function followToUser(req, res){
+    const { id } = req.params;
+    const userId = req.userId;
+
+    userService.followToUser(id, userId)
+    .then((results)=>res.send(results))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
+async function unfollowFromUser(req, res){
+    const { id } = req.params;
+    const userId = req.userId;
+
+    userService.unfollowFromUser(id, userId)
+    .then((results)=>res.send(results))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
 module.exports = {
     getAllUsers,
     getCurrentUser,
@@ -72,5 +90,7 @@ module.exports = {
     getUser,
     updateUser,
     deleteUser,
-    getUserByLogin
+    getUserByLogin,
+    followToUser,
+    unfollowFromUser
 };

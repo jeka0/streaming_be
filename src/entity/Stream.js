@@ -24,6 +24,9 @@ module.exports = new EntitySchema({
         viewer_count:{
             type: "int",
             default: 0
+        },
+        recording_file:{
+            type: "text"
         }
     },
     relations: {
