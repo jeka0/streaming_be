@@ -10,7 +10,7 @@ const checkMessage = (socket, next) => {
             return next();
         }
     }
-    if((socket[0] === 'join' || socket[0] === 'leave') && socket[1] !== undefined){
+    if((socket[0] === 'join' || socket[0] === 'leave' || socket[0] === 'leaveRange' ||socket[0] === 'joinRange' ) && socket[1] !== undefined){
         return next();
     }
     let err = new Error("Message is not valid");

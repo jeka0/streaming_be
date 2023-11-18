@@ -27,6 +27,18 @@ io.on('connection', client => {
     client.leave(chatId);
   });
 
+  client.on('joinRange', (range)=>{
+    range.forEach(element => {
+      if(element.login)client.join(element.login);
+    });
+  });
+
+  client.on('leaveRange', (range)=>{
+    range.forEach(element => {
+      if(element.login)client.leave(element.login);
+    });
+  });
+
   client.on("update", ({ chatId, message, id }) =>{
     updateMessage(id, client.userId, { message }).then((updatedMessage)=>{
       io.to(chatId).emit("update", updatedMessage);
@@ -50,4 +62,16 @@ io.on('connection', client => {
   })
 });
 
-module.exports = server;
+const sendStartAlert = (user)=>{
+  io.to(user.login).emit("startAlert", user);
+}
+
+const sendEndAlert = (user)=>{
+  io.to(user.login).emit("endAlert", user);
+}
+
+module.exports ={
+  server,
+  sendStartAlert,
+  sendEndAlert
+};

@@ -5,6 +5,7 @@ const streamSevice = require('../services/streamService');
 const userService = require('../services/userService');
 const NodeMediaServer = require('node-media-server'),
     config = require('../../config/default').rtmp_server;
+const { sendEndAlert, sendStartAlert } = require('./socketServer');
  
 nms = new NodeMediaServer(config);
  
@@ -17,6 +18,9 @@ nms.on('prePublish', async (id, StreamPath, args) => {
     } else {
         streamSevice.createStream( user.id, { stream_title:"AAAAAAAAAA", category: "games", recording_file: `${formatToFile(new Date())}.mp4`});
         userService.updateCurrentUser(user.id, { status: true});
+        user.status = true;
+        delete user.password;
+        sendStartAlert(user);
         console.log('[NodeEvent on prePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
         delay(10000).then(() => {
             let stream_key = getStreamKeyFromStreamPath(StreamPath);
@@ -30,6 +34,9 @@ nms.on('donePublish', async (id, StreamPath, args) => {
     const user = await getUserByStreamKey(stream_key);
     streamSevice.finishStream(user.id);
     userService.updateCurrentUser(user.id, { status: false});
+    user.status = false;
+    delete user.password;
+    sendEndAlert(user);
 });
  
 const getStreamKeyFromStreamPath = (path) => {

@@ -1,5 +1,5 @@
 var express = require('express');
-const server = require('./additionalServers/socketServer');
+const { server } = require('./additionalServers/socketServer');
 const router = require("./routes/router.js");
 const bodyParser = require('body-parser');
 const { AppDataSource } = require("./repositories/DataSource.js")

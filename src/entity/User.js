@@ -9,6 +9,7 @@ module.exports = new EntitySchema({
         },
         login: {
             type: "text",
+            unique: true
         },
         password: {
             type: "text",
