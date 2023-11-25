@@ -8,14 +8,17 @@ module.exports = new EntitySchema({
             generated: true 
         },
         login: {
-            type: "text",
-            unique: true
+            type: "varchar",
+            unique: true,
+            length: 255
         },
         password: {
-            type: "text",
+            type: "varchar",
+            length: 255
         },
         streamKey:{
-            type: "text",
+            type: "varchar",
+            length: 255
         },
         image:{
             type: "text",

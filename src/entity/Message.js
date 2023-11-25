@@ -8,7 +8,8 @@ module.exports = new EntitySchema({
             generated: true 
         },
         message:{
-            type: "text"
+            type: "varchar",
+            length: 255
         },
         datetime: {
             type: "timestamp"
@@ -20,6 +21,7 @@ module.exports = new EntitySchema({
             type: "many-to-one",
             joinTable: true,
             cascade: true,
+            onDelete: 'SET NULL'
         },
         chat: {
             target: "Chat",

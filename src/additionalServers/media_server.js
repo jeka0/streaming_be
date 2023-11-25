@@ -3,6 +3,7 @@ const { generateStreamThumbnail, delay } =require('../helpers/thumbnail');
 const { formatToFile } = require('../helpers/dateFormat') 
 const streamSevice = require('../services/streamService');
 const userService = require('../services/userService');
+const settingsService = require('../services/streamSettingsService')
 const NodeMediaServer = require('node-media-server'),
     config = require('../../config/default').rtmp_server;
 const { sendEndAlert, sendStartAlert } = require('./socketServer');
@@ -16,7 +17,8 @@ nms.on('prePublish', async (id, StreamPath, args) => {
         let session = nms.getSession(id);
         session.reject();
     } else {
-        streamSevice.createStream( user.id, { stream_title:"AAAAAAAAAA", category: "games", recording_file: `${formatToFile(new Date())}.mp4`});
+        const settings = await settingsService.getSettingsByUserId(user.id);
+        streamSevice.createStream( user.id, { ...settings, recording_file: `${formatToFile(new Date())}.mp4`});
         userService.updateCurrentUser(user.id, { status: true});
         user.status = true;
         delete user.password;

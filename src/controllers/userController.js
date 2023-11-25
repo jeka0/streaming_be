@@ -19,6 +19,14 @@ async function updateUser(req, res){
     .catch((err)=>res.status(400).send(err.message));
 }
 
+async function generateNewStreamKey(req, res){
+    const userId = req.userId;
+
+    userService.generateNewStreamKey(userId)
+    .then(()=>res.send({message: "OK"}))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
 async function getUser(req, res){
     const { id } = req.params;
 
@@ -92,5 +100,6 @@ module.exports = {
     deleteUser,
     getUserByLogin,
     followToUser,
-    unfollowFromUser
+    unfollowFromUser,
+    generateNewStreamKey
 };

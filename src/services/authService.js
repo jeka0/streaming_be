@@ -22,7 +22,7 @@ async function login(data){
 
 async function register(data){
     const user = await userService.getUserByLogin(data.login);
-    
+    console.log("+")
     if(user){
         throw new Error("This login is already in use by another account");
     }

@@ -3,6 +3,7 @@ const { getHesh } = require("../helpers/encrypt");
 const { deleteFile } = require("../helpers/fs");
 const { createChat, updateChat } = require("./chatService");
 const { generateStreamKey } = require("../helpers/streamKey");
+const { createSettings } = require('./streamSettingsService');
 
 async function createUser(user){
     user.password = await getHesh(user.password);
@@ -12,6 +13,14 @@ async function createUser(user){
     const streamer = await userAccess.createUser(user);
 
     await updateChat( user.chat.id,{ streamer });
+    await createSettings(user.id, {stream_title:"The stream has started!!!!", category: "Just chatting"})
+ }
+
+ async function generateNewStreamKey(userId){
+    const user = await getUserByID(userId);
+    user.streamKey = generateStreamKey();
+    delete user.subscription;
+    return await userAccess.updateUser(userId, user);
  }
  
  async function getAllUsers(){
@@ -32,7 +41,6 @@ async function createUser(user){
     if(!user){
       throw new Error("User is not found");
     }
-
     user.subscription.forEach((user, index)=>{delete user.password;})
 
     return user;
@@ -52,7 +60,7 @@ async function createUser(user){
  
  async function getUserByLogin(login){
     const user = await userAccess.getUserByLogin(login);
-    user.subscription.forEach((user, index)=>{delete user.password;})
+    user?.subscription.forEach((user, index)=>{delete user.password;})
     return user;
  }
  
@@ -127,6 +135,7 @@ async function createUser(user){
      updateCurrentUser,
      getUserByStreamKey,
      followToUser,
-     unfollowFromUser
+     unfollowFromUser,
+     generateNewStreamKey
  };
 

@@ -8,11 +8,13 @@ module.exports = new EntitySchema({
             generated: true 
         },
         stream_title: {
-            type: "text",
-            nullable: true
+            type: "varchar",
+            nullable: true,
+            length: 255
         },
         category:{
-            type: "text"
+            type: "varchar",
+            length: 255
         },
         start_time:{
             type: "timestamp"
@@ -26,7 +28,8 @@ module.exports = new EntitySchema({
             default: 0
         },
         recording_file:{
-            type: "text"
+            type: "varchar",
+            length: 255
         }
     },
     relations: {
@@ -35,6 +38,7 @@ module.exports = new EntitySchema({
             type: "many-to-one",
             joinTable: true,
             cascade: true,
+            onDelete: "cascade",
         },
     },
 })
