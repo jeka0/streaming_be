@@ -9,6 +9,14 @@ async function createStream(req, res){
     .catch((err)=>res.status(400).send(err.message));
 }
 
+async function getStreamByRecording(req, res){
+    const { name } = req.params;
+
+    streamSevice.getStreamByRecording(name)
+    .then((stream)=>res.send(stream))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
 async function getStream(req, res){
     const { id } = req.params;
 
@@ -93,5 +101,6 @@ module.exports = {
     deleteStream,
     getLiveRange,
     getUserRange,
-    getLiveStreamByKey
+    getLiveStreamByKey,
+    getStreamByRecording
 };

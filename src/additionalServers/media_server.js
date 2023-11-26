@@ -18,7 +18,8 @@ nms.on('prePublish', async (id, StreamPath, args) => {
         session.reject();
     } else {
         const settings = await settingsService.getSettingsByUserId(user.id);
-        streamSevice.createStream( user.id, { ...settings, recording_file: `${formatToFile(new Date())}.mp4`});
+        const name = formatToFile(new Date());
+        streamSevice.createStream( user.id, { ...settings, recording_file: `${name}.mp4`});
         userService.updateCurrentUser(user.id, { status: true});
         user.status = true;
         delete user.password;
@@ -26,7 +27,7 @@ nms.on('prePublish', async (id, StreamPath, args) => {
         console.log('[NodeEvent on prePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
         delay(10000).then(() => {
             let stream_key = getStreamKeyFromStreamPath(StreamPath);
-            generateStreamThumbnail(stream_key);
+            generateStreamThumbnail(stream_key, name);
         });
     }
 });

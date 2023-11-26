@@ -16,6 +16,15 @@ async function getLiveStreams(){
     });
 }
 
+async function getStreamByRecording(recording_file){
+    return await streamRep.findOne({
+        where:{
+            recording_file
+        }, 
+        relations:['user'] 
+    });
+}
+
 async function getStream(id){
     return await streamRep.findOne({
         where:{
@@ -107,5 +116,6 @@ module.exports = {
     deleteStream,
     getLiveRange,
     getUserRange,
-    getLiveUserStreams
+    getLiveUserStreams,
+    getStreamByRecording
 };

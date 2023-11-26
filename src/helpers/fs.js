@@ -1,5 +1,5 @@
 const fs = require('fs');
-const DIR = "Images/";
+const DIR = "Images/", DIR2 = "server/thumbnails/";
 
 const deleteFile = (imageName)=>{
     if(!fs.existsSync(DIR + imageName))return;
@@ -19,7 +19,19 @@ const createImages = ()=>{
     });
 }
 
+const copyImage = (oldFile, copyFile)=>{
+
+fs.copyFile(DIR2+oldFile, DIR2+copyFile, (err) => {
+    if (err) {
+        console.error(err)
+        return
+    }
+    console.log('Файл успешно копирован')
+});
+}
+
 module.exports = {
     deleteFile,
-    createImages
+    createImages,
+    copyImage
 }

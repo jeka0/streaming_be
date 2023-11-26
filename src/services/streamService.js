@@ -27,6 +27,18 @@ async function getStream(id){
     return stream;
 }
 
+async function getStreamByRecording(recording){
+    const stream = await streamAccess.getStreamByRecording(recording + '.mp4');
+
+    if(!stream){
+        throw new Error("Stream not found");
+    }
+
+    deleteInfo(stream);
+
+    return stream;
+}
+
 async function getLiveStreams()
 {
     const streams = await streamAccess.getLiveStreams()
@@ -122,5 +134,6 @@ module.exports = {
     paginationLive,
     paginationUser,
     finishStream,
-    getLiveStreamByKey
+    getLiveStreamByKey,
+    getStreamByRecording
 };
