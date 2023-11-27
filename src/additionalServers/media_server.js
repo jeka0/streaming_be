@@ -19,6 +19,7 @@ nms.on('prePublish', async (id, StreamPath, args) => {
     } else {
         const settings = await settingsService.getSettingsByUserId(user.id);
         const name = formatToFile(new Date());
+        delete settings.id;
         streamSevice.createStream( user.id, { ...settings, recording_file: `${name}.mp4`});
         userService.updateCurrentUser(user.id, { status: true});
         user.status = true;
