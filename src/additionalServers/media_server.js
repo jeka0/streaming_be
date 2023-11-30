@@ -6,7 +6,7 @@ const userService = require('../services/userService');
 const settingsService = require('../services/streamSettingsService')
 const NodeMediaServer = require('node-media-server'),
     config = require('../../config/default').rtmp_server;
-const { sendEndAlert, sendStartAlert } = require('./socketServer');
+const { sendEndAlert, sendStartAlert, sendViewers } = require('./socketServer');
  
 nms = new NodeMediaServer(config);
  
@@ -31,6 +31,28 @@ nms.on('prePublish', async (id, StreamPath, args) => {
             generateStreamThumbnail(stream_key, name);
         });
     }
+});
+
+nms.on('preConnect', async (id, args) => {
+    if(args.streamPath){
+        let stream_key = getStreamKeyFromStreamPath(args.streamPath);
+        const stream = await streamSevice.getLiveStreamByKey(stream_key);
+        stream.viewer_count++;
+        streamSevice.updateStream(stream.id, stream.user.id, stream);
+        sendViewers(stream);
+    }
+    console.log('[NodeEvent on preConnect]', `id=${id} args=${JSON.stringify(args)}`);
+});
+
+nms.on('doneConnect', async (id, args) => {
+    if(args.streamPath){
+        let stream_key = getStreamKeyFromStreamPath(args.streamPath);
+        const stream = await streamSevice.getLiveStreamByKey(stream_key);
+        stream.viewer_count--;
+        streamSevice.updateStream(stream.id, stream.user.id, stream);
+        sendViewers(stream);
+    }
+  console.log('[NodeEvent on doneConnect]', `id=${id} args=${JSON.stringify(args)}`);
 });
 
 nms.on('donePublish', async (id, StreamPath, args) => {
