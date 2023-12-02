@@ -83,8 +83,8 @@ async function createUser(user){
      throw new Error("User is not found");
    }
 
-   if(user.login){
-    const u = await getUserByLogin(user.login);
+   if(data.login){
+    const u = await getUserByLogin(data.login);
     if(u && u.login != user.login){
         throw new Error("This login is already in use by another account");
     }
