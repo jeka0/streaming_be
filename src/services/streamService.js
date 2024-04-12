@@ -1,5 +1,5 @@
 const streamAccess = require("../repositories/streamAccess");
-const { getUserByID, getUserByStreamKey } = require("./userService");
+const { getUserByID, getUserByLogin } = require("./userService");
 
 async function createStream(userId, data){
     data.start_time = new Date();
@@ -48,10 +48,9 @@ async function getLiveStreams()
     return streams;
 }
 
-async function getLiveStreamByKey(streamKey){
-    const user = await getUserByStreamKey(streamKey);
+async function getLiveStreamByLogin(login){
+    const user = await getUserByLogin(login);
     const streams = await streamAccess.getLiveUserStreams(user.id);
-
     if(streams.length === 0){
         throw new Error("Stream not found");
     }
@@ -67,6 +66,10 @@ async function getUserStreams(id){
     streams.forEach(deleteInfo);
 
     return streams;
+}
+
+async function update(stream){
+    return await streamAccess.createStream(stream)
 }
 
 async function updateStream(id, userId, data){
@@ -122,6 +125,7 @@ async function paginationUser(userId, page, limit){
 
 function deleteInfo(stream){
     delete stream.user.password;
+    delete stream.user.streamKey;
 }
 
 module.exports = {
@@ -134,6 +138,7 @@ module.exports = {
     paginationLive,
     paginationUser,
     finishStream,
-    getLiveStreamByKey,
-    getStreamByRecording
+    getLiveStreamByLogin,
+    getStreamByRecording,
+    update
 };

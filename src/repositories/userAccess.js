@@ -3,6 +3,7 @@ const { ILike } = require("typeorm");
 const userRep = dbAccess.AppDataSource.getRepository("User");
 
 async function createUser(user){
+    console.log(user + "s")
    return await userRep.save(user)
 }
 
@@ -50,6 +51,7 @@ async function deleteUser(id){
 }
 
 async function updateUser(id, data){
+    console.log(data)
     return await userRep.update({ id }, data)
 }
 

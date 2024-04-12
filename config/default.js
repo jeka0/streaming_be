@@ -5,15 +5,16 @@ const config = {
     rtmp_server: {
         rtmp: {
             port: 1935,
-            chunk_size: 60000,
+            chunk_size: 2000,
             gop_cache: true,
             ping: 60,
-            ping_timeout: 30
+            ping_timeout: 30,
         },
         http: {
             port: 8888,
             mediaroot: './server/media',
-            allow_origin: '*'
+            allow_origin: '*',
+            
         },
         trans: {
             ffmpeg: '../ffmpeg/ffmpeg-2023-09-07-git-9c9f48e7f2-full_build/bin/ffmpeg.exe',
@@ -21,14 +22,12 @@ const config = {
                 {
                     app: 'live',
                     hls: true,
-                    hlsFlags: '[hls_time=2:hls_list_size=3:hls_flags=delete_segments]',
-                    dash: true,
-                    dashFlags: '[f=dash:window_size=3:extra_window_size=5]',
+                    hlsFlags: '[hls_time=1:hls_list_size=3:hls_flags=delete_segments]',
                     mp4: true,
-                    mp4Flags: '[movflags=frag_keyframe+empty_moov]',
+                    mp4Flags: '[movflags=frag_keyframe+empty_moov]'
                 }
             ]
-        }
+        },
     }
     
 };

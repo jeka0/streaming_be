@@ -1,4 +1,4 @@
-const { getUserByStreamKey } = require('../services/userService');
+const { getUserByLogin } = require('../services/userService');
 const { generateStreamThumbnail, delay } =require('../helpers/thumbnail');
 const { formatToFile } = require('../helpers/dateFormat') 
 const streamSevice = require('../services/streamService');
@@ -11,34 +11,36 @@ const { sendEndAlert, sendStartAlert, sendViewers } = require('./socketServer');
 nms = new NodeMediaServer(config);
  
 nms.on('prePublish', async (id, StreamPath, args) => {
-    let stream_key = getStreamKeyFromStreamPath(StreamPath);
-    const user = await getUserByStreamKey(stream_key);
-    if (!user) {
-        let session = nms.getSession(id);
+    let user_name = getStreamNameFromStreamPath(StreamPath);
+    const user = await getUserByLogin(user_name);
+    const session = nms.getSession(id);
+
+    if (!user  || !args.secret || user.streamKey !== args.secret) {
+
         session.reject();
     } else {
         const settings = await settingsService.getSettingsByUserId(user.id);
-        const name = formatToFile(new Date());
+        const name = formatToFile(session.connectTime);
         delete settings.id;
         streamSevice.createStream( user.id, { ...settings, recording_file: `${name}.mp4`});
-        userService.updateCurrentUser(user.id, { status: true});
         user.status = true;
+        console.log(await userService.update(user));
         delete user.password;
         sendStartAlert(user);
         console.log('[NodeEvent on prePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
         delay(10000).then(() => {
-            let stream_key = getStreamKeyFromStreamPath(StreamPath);
-            generateStreamThumbnail(stream_key, name);
+            let user_name = getStreamNameFromStreamPath(StreamPath);
+            generateStreamThumbnail(user_name, name);
         });
     }
 });
 
 nms.on('preConnect', async (id, args) => {
     if(args.streamPath){
-        let stream_key = getStreamKeyFromStreamPath(args.streamPath);
-        const stream = await streamSevice.getLiveStreamByKey(stream_key);
+        let user_name = getStreamNameFromStreamPath(args.streamPath);
+        const stream = await streamSevice.getLiveStreamByLogin(user_name);
         stream.viewer_count++;
-        streamSevice.updateStream(stream.id, stream.user.id, stream);
+        console.log(await streamSevice.update(stream));
         sendViewers(stream);
     }
     console.log('[NodeEvent on preConnect]', `id=${id} args=${JSON.stringify(args)}`);
@@ -46,26 +48,27 @@ nms.on('preConnect', async (id, args) => {
 
 nms.on('doneConnect', async (id, args) => {
     if(args.streamPath){
-        let stream_key = getStreamKeyFromStreamPath(args.streamPath);
-        const stream = await streamSevice.getLiveStreamByKey(stream_key);
+        let stream_name = getStreamNameFromStreamPath(args.streamPath);
+        const stream = await streamSevice.getLiveStreamByLogin(stream_name);
         stream.viewer_count--;
-        streamSevice.updateStream(stream.id, stream.user.id, stream);
+        console.log(await streamSevice.update(stream));
         sendViewers(stream);
     }
   console.log('[NodeEvent on doneConnect]', `id=${id} args=${JSON.stringify(args)}`);
 });
 
 nms.on('donePublish', async (id, StreamPath, args) => {
-    let stream_key = getStreamKeyFromStreamPath(StreamPath);
-    const user = await getUserByStreamKey(stream_key);
+    let stream_name = getStreamNameFromStreamPath(StreamPath);
+    const user = await getUserByLogin(stream_name);
     streamSevice.finishStream(user.id);
-    userService.updateCurrentUser(user.id, { status: false});
     user.status = false;
+    console.log(await userService.update(user));
     delete user.password;
     sendEndAlert(user);
+    console.log('[NodeEvent on donePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
 });
  
-const getStreamKeyFromStreamPath = (path) => {
+const getStreamNameFromStreamPath = (path) => {
     let parts = path.split('/');
     return parts[parts.length - 1];
 };

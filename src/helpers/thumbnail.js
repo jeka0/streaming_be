@@ -5,16 +5,15 @@ const { copyImage} = require('./fs')
 
 const delay = async (ms) => await new Promise(resolve => setTimeout(resolve, ms));
 
-const generateStreamThumbnail = (stream_key, name) => {
+const generateStreamThumbnail = (user_name, name) => {
     const args = [
         '-y',
-        '-i', `http://127.0.0.1:8888/live/${stream_key}/index.m3u8`,
+        '-i', `http://127.0.0.1:8888/live/${user_name}/index.m3u8`,
         '-ss', '1',
         '-t', '1',
         '-f', 'mjpeg',
-        `./server/thumbnails/${stream_key}.png`,
+        `./server/thumbnails/${user_name}.png`,
     ];
-    console.log(stream_key)
     const child = spawn(cmd, args);
 
     child.on('start', () => {
@@ -24,7 +23,7 @@ const generateStreamThumbnail = (stream_key, name) => {
       child.on('exit', (code) => {
         if (code === 0) {
           console.log('Дочерний процесс завершился успешно');
-          copyImage(`${stream_key}.png`, `${name}.png`)
+          if(name)copyImage(`${user_name}.png`, `${name}.png`)
         } else {
           console.log('Дочерний процесс завершился с ошибкой');
         }

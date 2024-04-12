@@ -10,11 +10,12 @@ const { checkAuth } = require('../middlewares/checkAuth.js');
 
 router.use('/image', express.static('Images'));
 router.use('/thumbnail', express.static('server/thumbnails'));
+router.use('/live', express.static('server/media/live'));
 router.use('/auth', authRoutes);
 router.use('/user', checkAuth, userRoutes);
 router.use('/chat', checkAuth, chatRoutes);
 router.use('/message', checkAuth, messageRoutes);
 router.use('/stream', checkAuth, streamRoutes);
-router.use('/settings', checkAuth, streamSettingsRoutes)
+router.use('/settings', checkAuth, streamSettingsRoutes);
 
 module.exports = router;

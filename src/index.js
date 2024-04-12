@@ -4,7 +4,7 @@ const router = require("./routes/router.js");
 const bodyParser = require('body-parser');
 const { AppDataSource } = require("./repositories/DataSource.js")
 const node_media_server = require('./additionalServers/media_server');
-//const thumbnail_generator = require('./additionalServers/thumbnails.js')
+const thumbnail_generator = require('./additionalServers/thumbnails.js')
 require('dotenv').config();
 const { errors } = require('celebrate');
 const cors = require('cors');
@@ -24,5 +24,5 @@ AppDataSource.initialize().then(()=>{
   server.listen(SOCKET_PORT, ()=>console.log(`The socket server is running on a port ${SOCKET_PORT}...`));
   app.listen(SERVER_PORT,()=>console.log(`The server is running on a port ${SERVER_PORT}...`));
   node_media_server.run();
-  //thumbnail_generator.start()
+  thumbnail_generator.start()
 }).catch((err)=>console.log("Database connection error (" + err + ")"));

@@ -12,6 +12,12 @@ const name = {
     })
 }
 
+const bodyName ={
+    [Segments.BODY]: Joi.object().keys({
+        name: Joi.string().required()
+    })
+}
+
 const create = {
     [Segments.BODY]: Joi.object().keys({
         stream_title: Joi.string(),
@@ -45,5 +51,6 @@ module.exports = {
     update,
     create,
     pagination,
-    byKey
+    byKey,
+    bodyName
 }

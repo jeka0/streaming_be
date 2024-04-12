@@ -2,11 +2,11 @@ const router = require('express').Router();
 const {celebrate} = require('celebrate');
 const streamSchems = require("../validation/streamSchems")
 
-const {createStream, getStream, getLiveStreams, getCurrentUserStreams, getUserStreams, updateStream, deleteStream, getLiveRange, getUserRange, getLiveStreamByKey, getStreamByRecording} = require('../controllers/streamController');
+const {createStream, getStream, getLiveStreams, getCurrentUserStreams, getUserStreams, updateStream, deleteStream, getLiveRange, getUserRange, getLiveStreamByName, getStreamByRecording} = require('../controllers/streamController');
 
 router.post('/', celebrate(streamSchems.create), createStream);
 router.get('/live', getLiveStreams);
-router.post('/live/key', celebrate(streamSchems.byKey), getLiveStreamByKey)
+router.post('/live/name', celebrate(streamSchems.bodyName), getLiveStreamByName)
 router.get('/streams', celebrate(streamSchems.pagination), getLiveRange)
 router.get('/streams/user/:id', celebrate(streamSchems.pagination), celebrate(streamSchems.id), getUserRange)
 router.get('/recording/:name', celebrate(streamSchems.name), getStreamByRecording);

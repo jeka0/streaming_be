@@ -25,10 +25,10 @@ async function getStream(req, res){
     .catch((err)=>res.status(400).send(err.message));
 }
 
-async function getLiveStreamByKey(req, res){
-    const { streamKey } = req.body;
+async function getLiveStreamByName(req, res){
+    const { name } = req.body;
 
-    streamSevice.getLiveStreamByKey(streamKey)
+    streamSevice.getLiveStreamByLogin(name)
     .then((stream)=>res.send(stream))
     .catch((err)=>res.status(400).send(err.message));
 }
@@ -101,6 +101,6 @@ module.exports = {
     deleteStream,
     getLiveRange,
     getUserRange,
-    getLiveStreamByKey,
+    getLiveStreamByName,
     getStreamByRecording
 };

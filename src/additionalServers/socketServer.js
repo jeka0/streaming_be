@@ -63,8 +63,8 @@ io.on('connection', client => {
 });
 
 const sendViewers = (stream)=>{
-  console.log(`${stream.user.streamKey}/live`)
-  io.to(`${stream.user.streamKey}/live`).emit("viewer_count", {id: stream.id, viewer_count: stream.viewer_count});
+  console.log(`${stream.user.login}/live`)
+  io.to(`${stream.user.login}/live`).emit("viewer_count", {id: stream.id, viewer_count: stream.viewer_count});
 }
 
 const sendStartAlert = (user)=>{

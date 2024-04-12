@@ -89,6 +89,7 @@ async function pagination(page, limit){
 
 function deleteInfo(message){
     delete message.user.password;
+    delete message.user.streamKey;
 }
 
 

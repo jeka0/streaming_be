@@ -25,13 +25,13 @@ async function createUser(user){
  
  async function getAllUsers(){
     const users = await userAccess.getAllUsers();
-    users.map(user=>delete user.password);
+    users.map(user=>deleteInfo(user));
     return users;
  }
 
  async function searchUser(login){
   const users =  await userAccess.searchUser(login);
-  users.map(user=>delete user.password);
+  users.map(user=>deleteInfo(user));
   return users;
 }
  
@@ -41,7 +41,7 @@ async function createUser(user){
     if(!user){
       throw new Error("User is not found");
     }
-    user.subscription.forEach((user, index)=>{delete user.password;})
+    user.subscription.forEach((user, index)=>{deleteInfo(user)})
 
     return user;
  }
@@ -53,14 +53,14 @@ async function createUser(user){
     throw new Error("User is not found");
   }
 
-  user.subscription.forEach((user, index)=>{delete user.password;})
+  user.subscription.forEach((user, index)=>{deleteInfo(user)})
 
   return user;
 }
  
  async function getUserByLogin(login){
     const user = await userAccess.getUserByLogin(login);
-    user?.subscription.forEach((user, index)=>{delete user.password;})
+    user?.subscription.forEach((user, index)=>{deleteInfo(user)})
     return user;
  }
  
@@ -74,6 +74,10 @@ async function createUser(user){
     deleteFile(user.image);
 
     return await userAccess.deleteUser(id);
+ }
+
+ async function update(user){
+  return userAccess.createUser(user);
  }
  
  async function updateCurrentUser(id, data){
@@ -92,7 +96,7 @@ async function createUser(user){
 
    if(data.image)deleteFile(user.image);
    if(data.password)data.password = await getHesh(data.password);
-
+   console.log("USER UPDATED")
    return await userAccess.updateUser(id, data);
  }
 
@@ -110,8 +114,8 @@ async function createUser(user){
 
   if(!follower.subscription.some((u)=>u.id===streamer.id))follower.subscription.push(streamer);
   const updatedFollower = await userAccess.createUser(follower);
-  delete updatedFollower.password;
-  updatedFollower.subscription.forEach((user, index)=>{delete user.password;})
+  deleteInfo(updatedFollower)
+  updatedFollower.subscription.forEach((user, index)=>{deleteInfo(user)})
   return updatedFollower;
  }
 
@@ -127,9 +131,14 @@ async function createUser(user){
     follower.subscription.splice(index, 1);
   }
   const updatedFollower = await userAccess.createUser(follower);
-  delete updatedFollower.password;
-  updatedFollower.subscription.forEach((user, index)=>{delete user.password;})
+  deleteInfo(updatedFollower)
+  updatedFollower.subscription.forEach((user, index)=>{deleteInfo(user)})
   return updatedFollower;
+}
+
+function deleteInfo(user){
+  delete user.password;
+  delete user.streamKey;
 }
  
  module.exports = {
@@ -143,6 +152,7 @@ async function createUser(user){
      getUserByStreamKey,
      followToUser,
      unfollowFromUser,
-     generateNewStreamKey
+     generateNewStreamKey,
+     update
  };
 
