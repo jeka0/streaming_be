@@ -1,7 +1,9 @@
 const server = require('http').createServer();
 const { checkSocketAuth } = require('../middlewares/checkAuth');
 const { createMessage, deleteMessage, updateMessage } = require('../services/messageService');
+const { parseCommand } = require('../helpers/commands');
 const { checkMessage } = require('../middlewares/messageValidation');
+const { callCommand } = require('../services/commandService');
 require('dotenv').config();
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 const io = require("socket.io")(server, {
@@ -14,9 +16,19 @@ io.use(checkSocketAuth);
 
 io.on('connection', client => {
   client.on("message", ({ chatId, message }) =>{
-    createMessage(client.userId, chatId, {message} ).then((savedMessage)=>{
-      io.to(chatId).emit("message", savedMessage);
-    })
+    const info = parseCommand(message);
+    console.log(info);
+    if(info.isCommand){
+      callCommand(info, client.userId, chatId).then(()=>{
+        console.log("успех")
+      }).catch(err=>{
+      client.emit("error", err.message);
+    });
+    }else{
+      createMessage(client.userId, chatId, {message} ).then((savedMessage)=>{
+        io.to(chatId).emit("message", savedMessage);
+      })
+    }
   });
 
   client.on('join', (chatId) => {
@@ -43,15 +55,16 @@ io.on('connection', client => {
     updateMessage(id, client.userId, { message }).then((updatedMessage)=>{
       io.to(chatId).emit("update", updatedMessage);
     }).catch(err=>{
-      client.emit("error", err);
+      client.emit("error", err.message);
     });
   });
 
   client.on("delete", ({chatId, id}) =>{
+    console.log({chatId, id})
     deleteMessage(id, client.userId).then(()=>{
-      io.to(chatId).emit("delete", id);
+      io.to(chatId).emit("delete", {chatId, id});
     }).catch(err=>{
-      client.emit("error", err);
+      client.emit("error", err.message);
     })
   });
 

@@ -20,7 +20,7 @@ async function getChatByID(id){
         where:{
             id 
         }, 
-        relations:['users'] 
+        relations:['users', 'streamer'] 
     })
 }
 

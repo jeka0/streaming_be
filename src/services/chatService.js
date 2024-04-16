@@ -1,5 +1,4 @@
 const chatAccess = require("../repositories/chatAccess");
-const { getUserByID } = require("./userService");
 const { getHesh } = require("../helpers/encrypt");
 
 async function createChat(chat){
@@ -90,32 +89,42 @@ async function createChat(chat){
    if(users)await chatAccess.createChat({id:chat.id, users})
  }
 
- async function joinUser(id, userId){
+ async function joinUser(id, user, streamerId){
   const chat = await chatAccess.getChatByID(id);
-  const user = await getUserByID(userId);
-
+  console.log(chat)
   if(!chat){
     throw new Error("Chat not found");
+  }
+
+  if(chat.streamer.id !== streamerId){
+    throw new Error("Access denied");
   }
 
   if(!user){
       throw new Error("User not found");
   }
 
-  if(!chat.users.some((u)=>u.id===user.id))chat.users.push(user);
+  if(!chat.users.some((u)=>u.id===user.id) &&
+   user.id !== chat.streamer.id){
+    chat.users.push(user);
+  }
   const updatedchat = await chatAccess.createChat(chat);
   deleteInfo(updatedchat);
   return updatedchat;
  }
 
- async function leaveUser(id, userId){
+ async function leaveUser(id, user, streamerId){
   const chat = await chatAccess.getChatByID(id);
 
   if(!chat){
     throw new Error("Chat not found");
   }
 
-  const index = chat.users.findIndex(user=>user.id===userId);
+  if(chat.streamer.id !== streamerId){
+    throw new Error("Access denied");
+  }
+
+  const index = chat.users.findIndex(u=>u.id===user.id);
   if (index > -1) {
     chat.users.splice(index, 1);
   }
@@ -125,6 +134,7 @@ async function createChat(chat){
 }
 
  function deleteInfo(chat){
+  if(chat.streamer)chat.streamer = { id: chat.streamer.id }
   chat.users.forEach((user, index)=>{chat.users[index] = {id:user.id}})
 }
  
