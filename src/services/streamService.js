@@ -60,6 +60,18 @@ async function getLiveStreamByLogin(login){
     return streams[0];
 }
 
+async function getLiveStreamByUserId(userId){
+    const user = await getUserByID(userId);
+    const streams = await streamAccess.getLiveUserStreams(user.id);
+    if(streams.length === 0){
+        throw new Error("Stream not found");
+    }
+
+    deleteInfo(streams[0]);
+
+    return streams[0];
+}
+
 async function getUserStreams(id){
     const streams = await streamAccess.getUserStreams(id)
 
@@ -140,5 +152,6 @@ module.exports = {
     finishStream,
     getLiveStreamByLogin,
     getStreamByRecording,
-    update
+    update,
+    getLiveStreamByUserId
 };

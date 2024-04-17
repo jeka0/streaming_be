@@ -1,5 +1,6 @@
 
 const settingsService = require("../services/streamSettingsService");
+const streamSevice = require("../services/streamService");
 require('dotenv').config()
 
 async function createSettings(req, res){
@@ -24,8 +25,11 @@ async function updateSettings(req, res){
     const { stream_title, category } = req.body;
     const userId = req.userId;
 
+    streamSevice.getLiveStreamByUserId(userId).then((stream)=>
+        streamSevice.updateStream(stream.id, userId, { stream_title, category })
+    ).catch((err)=>{console.log(err)});
     settingsService.getSettingsByUserId(userId).then((settings)=>
-    settingsService.updateSettings(settings.id, {stream_title, category}))
+     settingsService.updateSettings(settings.id, {stream_title, category}))
     .then(()=>res.send({message: "OK"}))
     .catch((err)=>res.status(400).send(err.message));
 }
