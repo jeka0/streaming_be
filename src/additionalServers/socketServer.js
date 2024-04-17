@@ -19,11 +19,11 @@ io.on('connection', client => {
     const info = parseCommand(message);
     console.log(info);
     if(info.isCommand){
-      callCommand(info, client.userId, chatId).then(()=>{
-        console.log("успех")
+      callCommand(info, client.userId, chatId).then((result)=>{
+        client.emit("info", { message: result, chatId});
       }).catch(err=>{
-      client.emit("error", err.message);
-    });
+        client.emit("fail",  { message: err.message, chatId});
+      });
     }else{
       createMessage(client.userId, chatId, {message} ).then((savedMessage)=>{
         io.to(chatId).emit("message", savedMessage);

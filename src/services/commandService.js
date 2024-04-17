@@ -9,9 +9,11 @@ const callCommand = async (command, streamerId , chatId)=>{
 
     switch(command.command){
         case "mod":
-            return joinUser(chatId, user, streamerId);
+            await joinUser(chatId, user, streamerId);
+            return `${user.login} has been assigned as a moderator`;
         case "unmod":
-            return leaveUser(chatId, user, streamerId);
+            await leaveUser(chatId, user, streamerId);
+            return `${user.login} was excluded from moderation`;
     }
 }
 

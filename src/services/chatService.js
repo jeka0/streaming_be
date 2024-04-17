@@ -107,6 +107,8 @@ async function createChat(chat){
   if(!chat.users.some((u)=>u.id===user.id) &&
    user.id !== chat.streamer.id){
     chat.users.push(user);
+  }else{
+    throw new Error("The user is already a moderator");
   }
   const updatedchat = await chatAccess.createChat(chat);
   deleteInfo(updatedchat);
@@ -127,6 +129,8 @@ async function createChat(chat){
   const index = chat.users.findIndex(u=>u.id===user.id);
   if (index > -1) {
     chat.users.splice(index, 1);
+  }else{
+    throw new Error("The user is not a moderator");
   }
   const updatedChat = await chatAccess.createChat(chat);
   deleteInfo(updatedChat);
