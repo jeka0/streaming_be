@@ -1,5 +1,5 @@
-
 const chatService = require("../services/chatService");
+const userService = require("../services/userService");
 require('dotenv').config()
 
 async function createChat(req, res){
@@ -13,6 +13,14 @@ async function createChat(req, res){
 async function getAllChats(req, res){
     chatService.getAllChats()
     .then((chats)=>res.send(chats))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
+async function getAllModersByChat(req, res){
+    const { id } = req.params;
+    
+    chatService.getAllModersByChat(id)
+    .then((result)=>res.send(result))
     .catch((err)=>res.status(400).send(err.message));
 }
 
@@ -66,18 +74,21 @@ async function getChatByName(req, res){
 
 async function joinUser(req, res){
     const { id } = req.params;
+    const { moderId } = req.body;
     const userId = req.userId;
 
-    chatService.joinUser(id, userId)
+    userService.getUserByID(moderId)
+    .then(user => chatService.joinUser(id, user, userId))
     .then((result)=>res.send(result))
     .catch((err)=>res.status(400).send(err.message));
 }
 
 async function leaveUser(req, res){
     const { id } = req.params;
+    const { moderId } = req.body;
     const userId = req.userId;
 
-    chatService.leaveUser(id, userId)
+    chatService.leaveUser(id, { id: moderId } , userId)
     .then((result)=>res.send(result))
     .catch((err)=>res.status(400).send(err.message));
 }
@@ -92,5 +103,6 @@ module.exports = {
     getChat,
     getChatByName,
     joinUser,
-    leaveUser
+    leaveUser,
+    getAllModersByChat
 };

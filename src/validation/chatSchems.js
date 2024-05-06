@@ -6,6 +6,12 @@ const id = {
     })
 }
 
+const moderation = {
+    [Segments.BODY]: Joi.object().keys({
+        moderId: Joi.number().required(),
+    })
+}
+
 const create = {
     [Segments.BODY]: Joi.object().keys({
         name: Joi.string(),
@@ -28,4 +34,4 @@ const update = {
     }).required().min(1),
 }
 
-module.exports = { id, create, getByName, update }
+module.exports = { id, create, getByName, update, moderation }

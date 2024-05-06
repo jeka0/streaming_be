@@ -46,6 +46,18 @@ async function createChat(chat){
 
     return chat;
  }
+
+ async function getAllModersByChat(chatId){
+  const chat = await chatAccess.getChatByID(chatId);
+  
+  if(!chat){
+    throw new Error("Chat is not found");
+  }
+
+  deleteUsersInfo(chat.users)
+
+  return chat.users;
+ }
  
  async function getChatByName(name){
     const chat = await chatAccess.getChatByName(name);
@@ -137,9 +149,16 @@ async function createChat(chat){
   return updatedChat;
 }
 
- function deleteInfo(chat){
+function deleteInfo(chat){
   if(chat.streamer)chat.streamer = { id: chat.streamer.id }
   chat.users.forEach((user, index)=>{chat.users[index] = {id:user.id}})
+}
+
+function deleteUsersInfo(users){
+  users.forEach((user, index)=>{
+    delete user.password;
+    delete user.streamKey;
+  })
 }
  
  module.exports = {
@@ -152,6 +171,7 @@ async function createChat(chat){
     deleteChat,
     updateChat,
     joinUser,
-    leaveUser
+    leaveUser,
+    getAllModersByChat
  };
 
