@@ -4,7 +4,7 @@ const { createMessage, deleteMessage, updateMessage } = require('../services/mes
 const { parseCommand } = require('../helpers/commands');
 const { checkMessage } = require('../middlewares/messageValidation');
 const { callCommand } = require('../services/commandService');
-const { checkPenalty } = require('../services/penaltyService');
+const { checkPenalty, getPenaltyByUserAndChat } = require('../services/penaltyService');
 require('dotenv').config();
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 const io = require("socket.io")(server, {
@@ -18,10 +18,10 @@ io.use(checkSocketAuth);
 io.on('connection', client => {
   client.on("message", ({ chatId, message }) =>{
     const info = parseCommand(message);
-    console.log(info);
     if(info.isCommand){
       callCommand(info, client.userId, chatId).then((result)=>{
-        client.emit("info", { message: result, chatId});
+        userInChat(chatId, result.userId, result.type);
+        client.emit("info", { message: result.message, chatId});
       }).catch(err=>{
         client.emit("fail",  { message: err.message, chatId});
       });
@@ -38,6 +38,9 @@ io.on('connection', client => {
 
   client.on('join', (chatId) => {
     client.join(chatId);
+    getPenaltyByUserAndChat(client.userId, chatId, {status: "active"})
+    .then(penalty=>userInChat(chatId,client.userId, penalty.type.code))
+    .catch((err)=>{});
   });
 
   client.on('leave', (chatId)=>{
@@ -60,7 +63,7 @@ io.on('connection', client => {
     updateMessage(id, client.userId, { message }).then((updatedMessage)=>{
       io.to(chatId).emit("update", updatedMessage);
     }).catch(err=>{
-      client.emit("error", err.message);
+      client.emit("fail",  { message: err.message, chatId});
     });
   });
 
@@ -69,7 +72,7 @@ io.on('connection', client => {
     deleteMessage(id, client.userId).then(()=>{
       io.to(chatId).emit("delete", {chatId, id});
     }).catch(err=>{
-      client.emit("error", err.message);
+      client.emit("fail",  { message: err.message, chatId});
     })
   });
 
@@ -79,6 +82,10 @@ io.on('connection', client => {
     client.emit("error", err);
   })
 });
+
+const userInChat = (chatId, userId, type)=>{
+  io.to(chatId).emit(type, {userId, chatId});
+}
 
 const sendViewers = (stream)=>{
   console.log(`${stream.user.login}/live`)
@@ -97,5 +104,6 @@ module.exports ={
   server,
   sendStartAlert,
   sendEndAlert,
-  sendViewers
+  sendViewers,
+  userInChat
 };
