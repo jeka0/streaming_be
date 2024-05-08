@@ -1,4 +1,4 @@
-const commands = ['mod', 'unmod'];
+const commands = ['mod', 'unmod', 'ban', 'unban'];
 
 const parseCommand = (message)=>{
     let isCommand = false;

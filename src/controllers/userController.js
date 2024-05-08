@@ -32,7 +32,7 @@ async function getUser(req, res){
 
     userService.getUserByID(id)
     .then((user)=>{
-        const { password, ...userData } = user;
+        const { password, streamKey, ...userData } = user;
 
         res.send(userData);
     }).catch((err)=>res.status(400).send(err.message));
@@ -43,7 +43,7 @@ async function getUserByLogin(req, res){
 
     userService.getUserByLogin(login)
     .then((user)=>{
-        const { password, ...userData } = user;
+        const { password, streamKey, ...userData } = user;
 
         res.send(userData);
     }).catch((err)=>res.status(400).send(err.message));
@@ -53,7 +53,7 @@ async function getCurrentUser(req, res){
     const userId = req.userId;
     userService.getUserByID(userId)
     .then((user)=>{
-        const { password, ...userData } = user;
+        const { password, streamKey, ...userData } = user;
 
         res.send(userData);
     }).catch((err)=>res.status(400).send(err.message));

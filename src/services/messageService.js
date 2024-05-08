@@ -52,7 +52,7 @@ async function getAllMessagesByChat(chatId){
 async function updateMessage(id, userId, data){
     const messages = await messageAccess.getMessage(id);
     messages.chat = await getChatByID(messages.chat.id);
-    if(!messages.chat.users.some((u)=>u.id===userId) && userId !== messages.chat.streamer.id){ //messages.user.id !== userId
+    if(!messages.chat.users.some((u)=>u.id===userId) && userId !== messages.chat.streamer.id){
         throw new Error("Access denied");
     }
 
@@ -70,7 +70,7 @@ async function deleteMessage(id, userId){
     const messages = await messageAccess.getMessage(id);
 
     messages.chat = await getChatByID(messages.chat.id);
-    if(!messages.chat.users.some((u)=>u.id===userId) && userId !== messages.chat.streamer.id){ //messages.user.id !== userId
+    if(!messages.chat.users.some((u)=>u.id===userId) && userId !== messages.chat.streamer.id){
         throw new Error("Access denied");
     }
 

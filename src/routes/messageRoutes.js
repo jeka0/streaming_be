@@ -8,7 +8,7 @@ router.get('/all', getAllMessages);
 router.get('/chat/:id', getAllMessagesByChat);
 router.get('/messages', celebrate(messageSchems.pagination), getRange)
 router.get('/:id', celebrate(messageSchems.id), getMessage);
-router.post('/create/:id', celebrate(messageSchems.id), celebrate(messageSchems.update), createMessage);
+router.post('/create/:id', celebrate(messageSchems.id), celebrate(messageSchems.create), createMessage);
 router.put('/:id', celebrate(messageSchems.id), celebrate(messageSchems.update), updateMessage);
 router.delete('/:id',  celebrate(messageSchems.id), deleteMessage);
 

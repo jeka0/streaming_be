@@ -8,20 +8,22 @@ const id = {
 
 const create = {
     [Segments.BODY]: Joi.object().keys({
-        message: Joi.string().required()
+        userId: Joi.number().required(),
+        type: Joi.string().required(),
+        status: Joi.string().required()
     })
 }
 
 const update = {
     [Segments.BODY]: Joi.object().keys({
-        message: Joi.string().required()
+        status: Joi.string().required()
     })
 }
 
-const pagination = {
+const query = {
     [Segments.QUERY]: Joi.object().keys({
-        page: Joi.number().required(),
-        limit: Joi.number().required()
+        userId: Joi.number().required(),
+        chatId: Joi.number().required()
     })
 }
 
@@ -29,5 +31,5 @@ module.exports = {
     id,
     create,
     update,
-    pagination
+    query
 }

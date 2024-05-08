@@ -4,6 +4,7 @@ const { createMessage, deleteMessage, updateMessage } = require('../services/mes
 const { parseCommand } = require('../helpers/commands');
 const { checkMessage } = require('../middlewares/messageValidation');
 const { callCommand } = require('../services/commandService');
+const { checkPenalty } = require('../services/penaltyService');
 require('dotenv').config();
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 const io = require("socket.io")(server, {
@@ -25,9 +26,13 @@ io.on('connection', client => {
         client.emit("fail",  { message: err.message, chatId});
       });
     }else{
-      createMessage(client.userId, chatId, {message} ).then((savedMessage)=>{
+      checkPenalty(client.userId, chatId)
+      .then(()=>createMessage(client.userId, chatId, {message}))
+      .then((savedMessage)=>{
         io.to(chatId).emit("message", savedMessage);
-      })
+      }).catch(err=>{
+        client.emit("fail",  { message: err.message, chatId});
+      });
     }
   });
 

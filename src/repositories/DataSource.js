@@ -14,6 +14,9 @@ const AppDataSource = new typeorm.DataSource({
         require("../entity/Chat.js"),
         require("../entity/Stream.js"),
         require("../entity/streamSettings.js"),
+        require("../entity/Status.js"),
+        require("../entity/Type.js"),
+        require("../entity/Penalty.js"),
     ],
     migrations: ["migration/**/*.js"],
     cli: {
