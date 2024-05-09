@@ -3,6 +3,8 @@ const { getUserByID } = require("./userService");
 const { getChatByID } = require("./chatService");
 const { getStatusByCode } = require("./statusService");
 const { getTypeByCode } = require("./typeService");
+const { formatToString } =require("../helpers/dateFormat");
+
 async function createPenalty(data){
     const checkPenalty = await penaltyAccess.getPenaltyByUserAndChat(data.userId, data.chatId, data?.status, data?.type);
 
@@ -18,6 +20,7 @@ async function createPenalty(data){
     newPenalty.chat = await getChatByID(data.chatId);
     newPenalty.type = await getTypeByCode(data.type);
     newPenalty.status = await getStatusByCode(data.status);
+    if(data.type === "timeout") newPenalty.end_time = data.time;
 
     if(!newPenalty.chat.users.some((u)=>u.id===data.ownerId) && data.ownerId !== newPenalty.chat.streamer.id){
         throw new Error("Access denied");
@@ -60,7 +63,8 @@ async function checkPenalty(userId, chatId){
         switch(penalty.type.code){
             case "ban":
                 throw new Error(`User ${penalty.user.login} is banned from this chat!!!`);
-                break;
+            case "timeout":
+                throw new Error(`User "${penalty.user.login}" timeouted until ${formatToString(penalty.end_time)}`);
         }
     }
 
@@ -79,17 +83,16 @@ async function getPenaltyByUserAndChat(userId, chatId, data){
     return penalty;
 }
 
-async function getAllPenaltys()
-{
-    const penaltys = await penaltyAccess.getAllPenaltys()
+async function getAllPenaltys(status, type){
+    const penaltys = await penaltyAccess.getAllPenaltys(status, type)
 
     penaltys.forEach(deleteInfo);
 
     return penaltys;
 }
 
-async function getAllPenaltysByChat(chatId){
-    const penaltys = await penaltyAccess.getAllPenaltysByChat(chatId);
+async function getAllPenaltysByChat(chatId, status, type){
+    const penaltys = await penaltyAccess.getAllPenaltysByChat(chatId, status, type);
 
     penaltys.forEach(deleteInfo);
 
@@ -133,6 +136,17 @@ async function updatePenalty(id, userId, data){
     return updatedPenalty;
 }
 
+async function update(id, data){
+    data.status = await getStatusByCode(data.status);
+    const updatedPenalty = await penaltyAccess.updatePenalty(id, data);
+
+    if(!updatedPenalty){
+        throw new Error("Error updating Penalty");
+    }
+
+    return updatedPenalty;
+}
+
 async function deletePenalty(id, userId){
     const penaltyR = await penaltyAccess.getPenaltyById(id);
     
@@ -166,5 +180,6 @@ module.exports = {
     getAllPenaltysByUserAndChat,
     updatePenalty,
     deletePenalty,
-    checkPenalty
+    checkPenalty,
+    update
 };

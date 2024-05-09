@@ -1,5 +1,5 @@
 var express = require('express');
-const { server } = require('./additionalServers/socketServer');
+const { server, timeoutsManager } = require('./additionalServers/socketServer');
 const router = require("./routes/router.js");
 const bodyParser = require('body-parser');
 const { AppDataSource } = require("./repositories/DataSource.js")
@@ -24,5 +24,6 @@ AppDataSource.initialize().then(()=>{
   server.listen(SOCKET_PORT, ()=>console.log(`The socket server is running on a port ${SOCKET_PORT}...`));
   app.listen(SERVER_PORT,()=>console.log(`The server is running on a port ${SERVER_PORT}...`));
   node_media_server.run();
-  thumbnail_generator.start()
+  thumbnail_generator.start();
+  timeoutsManager();
 }).catch((err)=>console.log("Database connection error (" + err + ")"));

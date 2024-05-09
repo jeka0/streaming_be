@@ -5,15 +5,22 @@ async function createPenalty(penalty){
    return await penaltyRep.save(penalty)
 }
 
-async function getAllPenaltys(){
-    return await penaltyRep.find({
+async function getAllPenaltys(status, type){
+    const config = {
         relations:['user', 'chat', 'type', 'status'],
          order: {datetime: 'DESC'}
-    });
+    }
+    if(status || type){
+        config.where = {};
+        if(status) config.where.status = { code: status };
+        if(type) config.where.type = { code: type };
+    }
+
+    return await penaltyRep.find(config);
 }
 
-async function getAllPenaltysByChat(chatId){
-    return await penaltyRep.find({
+async function getAllPenaltysByChat(chatId, status, type){
+    const config = {
         where:{
             chat:{
                 id: chatId
@@ -21,7 +28,12 @@ async function getAllPenaltysByChat(chatId){
         }, 
         relations:['user', 'chat', 'type', 'status'],
         order: {datetime: 'DESC'}
-   });
+   }
+
+   if(status) config.where.status = { code: status };
+   if(type) config.where.type = { code: type };
+    
+    return await penaltyRep.find(config);
 }
 
 async function getAllPenaltysByUser(userId){

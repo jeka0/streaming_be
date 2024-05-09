@@ -4,7 +4,7 @@ const { createMessage, deleteMessage, updateMessage } = require('../services/mes
 const { parseCommand } = require('../helpers/commands');
 const { checkMessage } = require('../middlewares/messageValidation');
 const { callCommand } = require('../services/commandService');
-const { checkPenalty, getPenaltyByUserAndChat } = require('../services/penaltyService');
+const { checkPenalty, getPenaltyByUserAndChat, getAllPenaltys, update } = require('../services/penaltyService');
 require('dotenv').config();
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 const io = require("socket.io")(server, {
@@ -20,7 +20,8 @@ io.on('connection', client => {
     const info = parseCommand(message);
     if(info.isCommand){
       callCommand(info, client.userId, chatId).then((result)=>{
-        userInChat(chatId, result.userId, result.type);
+        if(result.type === "timeout")timeoutsManager();
+        userInChat(chatId, result.userId, result.type, result.time);
         client.emit("info", { message: result.message, chatId});
       }).catch(err=>{
         client.emit("fail",  { message: err.message, chatId});
@@ -39,7 +40,7 @@ io.on('connection', client => {
   client.on('join', (chatId) => {
     client.join(chatId);
     getPenaltyByUserAndChat(client.userId, chatId, {status: "active"})
-    .then(penalty=>userInChat(chatId,client.userId, penalty.type.code))
+    .then(penalty=>userInChat(chatId,client.userId, penalty.type.code, penalty.end_time))
     .catch((err)=>{});
   });
 
@@ -83,8 +84,8 @@ io.on('connection', client => {
   })
 });
 
-const userInChat = (chatId, userId, type)=>{
-  io.to(chatId).emit(type, {userId, chatId});
+const userInChat = (chatId, userId, type, time)=>{
+  io.to(chatId).emit(type, {userId, chatId, time});
 }
 
 const sendViewers = (stream)=>{
@@ -100,10 +101,35 @@ const sendEndAlert = (user)=>{
   io.to(user.login).emit("endAlert", user);
 }
 
+var timeout;
+
+async function timeoutsManager(){
+  if(timeout) {clearTimeout(timeout); timeout = undefined}
+  const penaltys = await getAllPenaltys("active", "timeout");
+  const now = new Date();
+  let minTime = undefined;
+  penaltys.forEach(penalty=>{
+      if(now.getTime()>=penalty.end_time.getTime()){
+          update(penalty.id, {status:"inactive"})
+          .then(()=>{
+              userInChat(penalty.chat.id, penalty.user.id, "untimeout", penalty.end_time)
+          });
+      }else{
+        if(minTime){
+          if(minTime.getTime() > penalty.end_time.getTime()) minTime = penalty.end_time
+        }else {
+          minTime = penalty.end_time
+        }
+      }
+  })
+  if(minTime)timeout = setTimeout(timeoutsManager, minTime.getTime()-now.getTime()+100);
+}
+
 module.exports ={
   server,
   sendStartAlert,
   sendEndAlert,
   sendViewers,
-  userInChat
+  userInChat,
+  timeoutsManager
 };
