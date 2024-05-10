@@ -1,10 +1,10 @@
 const streamSevice = require("../services/streamService");
 
 async function createStream(req, res){
-    const { stream_title, category } = req.body;
+    const { stream_title, categoryName } = req.body;
     const userId = req.userId;
 
-    streamSevice.createStream( userId, { stream_title, category })
+    streamSevice.createStream( userId, { stream_title, categoryName })
     .then(()=>res.send({message: "OK"}))
     .catch((err)=>res.status(400).send(err.message));
 }
@@ -57,10 +57,10 @@ async function getUserStreams(req, res){
 
 async function updateStream(req, res){
     const { id } = req.params;
-    const { stream_title, category } = req.body;
+    const { stream_title, categoryName } = req.body;
     const userId = req.userId;
 
-    streamSevice.updateStream(id, userId, { stream_title, category })
+    streamSevice.updateStream(id, userId, { stream_title, categoryName })
     .then(()=>res.send({message: "OK"}))
     .catch((err)=>res.status(400).send(err.message));
 }

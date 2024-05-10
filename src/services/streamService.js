@@ -1,8 +1,13 @@
 const streamAccess = require("../repositories/streamAccess");
 const { getUserByID, getUserByLogin } = require("./userService");
+const { getCategoryByName } = require("./categoryService");
 
 async function createStream(userId, data){
     data.start_time = new Date();
+    if(data.categoryName){
+        data.category = await getCategoryByName(data.categoryName);
+        delete data.categoryName;
+    }
     data.user = await getUserByID(userId);
     await streamAccess.createStream(data);
 }
@@ -90,7 +95,10 @@ async function updateStream(id, userId, data){
     if(stream.user.id !== userId){
         throw new Error("Access denied");
     }
-
+    if(data.categoryName){
+        data.category = await getCategoryByName(data.categoryName);
+        delete data.categoryName;
+    }
     const updatedStream = await streamAccess.updateStream(id, data);
 
     if(!updatedStream){

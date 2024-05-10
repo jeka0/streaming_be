@@ -21,14 +21,14 @@ const bodyName ={
 const create = {
     [Segments.BODY]: Joi.object().keys({
         stream_title: Joi.string(),
-        category: Joi.string().required()
+        categoryName: Joi.string().required()
     }).required().min(1)
 }
 
 const update = {
     [Segments.BODY]: Joi.object().keys({
         stream_title: Joi.string(),
-        category: Joi.string()
+        categoryName: Joi.string()
     }).required().min(1)
 }
 

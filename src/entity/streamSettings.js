@@ -12,10 +12,6 @@ module.exports = new EntitySchema({
             nullable: true,
             length: 255
         },
-        category:{
-            type: "varchar",
-            length: 255
-        },
     },
     relations: {
         user: {
@@ -29,6 +25,12 @@ module.exports = new EntitySchema({
                 name: 'user_id',
                 referencedColumnName: 'id',
             }
-        }
+        },
+        category: {
+            target: "Category",
+            type: "many-to-one",
+            joinTable: true,
+            cascade: true,
+        },
     },
 })

@@ -10,7 +10,7 @@ async function getSettingsByID(id){
         where:{
             id 
         }, 
-        relations:['user'] 
+        relations:['user', 'category'] 
     })
 }
 
@@ -22,7 +22,7 @@ async function getSettingsByUserID(userId){
                 id: userId
             }
         }, 
-        relations:['user'] 
+        relations:['user', 'category'] 
      })
 }
 

@@ -11,7 +11,7 @@ async function getLiveStreams(){
         where:{
             end_time: IsNull()
         }, 
-        relations:['user'],
+        relations:['user', 'category'],
         order: {id: 'DESC'}
     });
 }
@@ -21,7 +21,7 @@ async function getStreamByRecording(recording_file){
         where:{
             recording_file
         }, 
-        relations:['user'] 
+        relations:['user', 'category'] 
     });
 }
 
@@ -30,7 +30,7 @@ async function getStream(id){
         where:{
             id 
         }, 
-        relations:['user'] 
+        relations:['user', 'category'] 
     });
 }
 
@@ -41,7 +41,7 @@ async function getUserStreams(userId){
                 id:userId
             }
         },
-        relations:['user'],
+        relations:['user', 'category'],
         order: {id: 'DESC'}
     });
 }
@@ -54,7 +54,7 @@ async function getLiveUserStreams(userId){
             },
             end_time: IsNull()
         },
-        relations:['user'],
+        relations:['user', 'category'],
         order: {start_time: 'DESC'}
     });
 }
@@ -78,7 +78,7 @@ async function getLiveRange(skip, take){
         where:{
             end_time: null
         },
-        relations:['user'],
+        relations:['user', 'category'],
         order: {id: 'DESC'}
     });
 
@@ -97,7 +97,7 @@ async function getUserRange(userId, skip, take){
                 id:userId
             }
         },
-        relations:['user'],
+        relations:['user', 'category'],
         order: {id: 'DESC'}
     });
 

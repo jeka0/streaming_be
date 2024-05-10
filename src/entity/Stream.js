@@ -12,10 +12,6 @@ module.exports = new EntitySchema({
             nullable: true,
             length: 255
         },
-        category:{
-            type: "varchar",
-            length: 255
-        },
         start_time:{
             type: "timestamp"
         },
@@ -39,6 +35,12 @@ module.exports = new EntitySchema({
             joinTable: true,
             cascade: true,
             onDelete: "cascade",
+        },
+        category: {
+            target: "Category",
+            type: "many-to-one",
+            joinTable: true,
+            cascade: true,
         },
     },
 })

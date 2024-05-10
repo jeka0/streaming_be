@@ -7,6 +7,7 @@ const messageRoutes = require("./messageRoutes");
 const streamRoutes = require("./streamRoutes.js");
 const streamSettingsRoutes = require("./streamSettingsRoutes.js");
 const typeRoutes = require("./typeRoutes.js");
+const categoryRoutes = require("./categoryRoutes.js");
 const statusRoutes = require("./statusRoutes.js");
 const penaltyRoutes = require("./penaltyRoutes.js");
 const { checkAuth } = require('../middlewares/checkAuth.js');
@@ -21,6 +22,7 @@ router.use('/message', checkAuth, messageRoutes);
 router.use('/stream', checkAuth, streamRoutes);
 router.use('/settings', checkAuth, streamSettingsRoutes);
 router.use('/type', checkAuth, typeRoutes);
+router.use('/category', checkAuth, categoryRoutes);
 router.use('/status', checkAuth, statusRoutes);
 router.use('/penalty', checkAuth, penaltyRoutes);
 

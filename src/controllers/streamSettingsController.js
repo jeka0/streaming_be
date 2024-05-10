@@ -26,7 +26,7 @@ async function updateSettings(req, res){
     const userId = req.userId;
 
     streamSevice.getLiveStreamByUserId(userId).then((stream)=>
-        streamSevice.updateStream(stream.id, userId, { stream_title, category })
+        streamSevice.updateStream(stream.id, userId, { stream_title, categoryName: category })
     ).catch((err)=>{console.log(err)});
     settingsService.getSettingsByUserId(userId).then((settings)=>
      settingsService.updateSettings(settings.id, {stream_title, category}))
