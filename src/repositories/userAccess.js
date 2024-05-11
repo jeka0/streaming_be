@@ -24,7 +24,7 @@ async function getUserByID(id){
         where:{
             id 
         }, 
-        relations:['chat', 'subscription'] 
+        relations:['chat', 'subscription', 'tags'] 
     })
 }
 
@@ -33,7 +33,7 @@ async function getUserByStreamKey(streamKey){
         where:{
             streamKey 
         }, 
-        relations:['chat', 'subscription'] 
+        relations:['chat', 'subscription', 'tags'] 
      })
 }
 
@@ -42,7 +42,7 @@ async function getUserByLogin(login){
         where:{
             login 
         }, 
-        relations:['chat', 'subscription'] 
+        relations:['chat', 'subscription', 'tags'] 
      })
 }
 

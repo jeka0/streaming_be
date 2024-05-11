@@ -45,6 +45,12 @@ module.exports = new EntitySchema({
             type: "many-to-many",
             joinTable: true,
             cascade: true,
+        },
+        tags: {
+            target: "Tag",
+            type: "many-to-many",
+            joinTable: true,
+            cascade: true,
         }
     }
 })

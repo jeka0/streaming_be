@@ -4,6 +4,7 @@ const { deleteFile } = require("../helpers/fs");
 const { createChat, updateChat } = require("./chatService");
 const { generateStreamKey } = require("../helpers/streamKey");
 const { createSettings } = require('./streamSettingsService');
+const { getTagByName, getTagById } = require('./tagService');
 
 async function createUser(user){
     user.password = await getHesh(user.password);
@@ -136,6 +137,44 @@ async function createUser(user){
   return updatedFollower;
 }
 
+async function addTag(userId, tagName){
+  const user = await userAccess.getUserByID(userId);
+
+  if(!user){
+    throw new Error("User is not found");
+  }
+
+  const tag = await getTagByName(tagName);
+  if(!user.tags.some((t)=>t.id===tag.id)){
+    user.tags.push(tag);
+  }else{
+    throw new Error("Tag already added");
+  }
+  const updatedUser = await userAccess.createUser(user);
+  deleteInfo(updatedUser)
+  updatedUser.subscription.forEach((user, index)=>{deleteInfo(user)})
+  return updatedUser;
+}
+
+async function removeTag(userId, tagId){
+  const user = await userAccess.getUserByID(userId);
+
+  if(!user){
+    throw new Error("User is not found");
+  }
+
+  const index = user.tags.findIndex(tag=>tag.id==tagId);
+  if (index > -1) {
+    user.tags.splice(index, 1);
+  }else{
+    throw new Error("This tag has not been added");
+  }
+  const updatedUser = await userAccess.createUser(user);
+  deleteInfo(updatedUser)
+  updatedUser.subscription.forEach((user, index)=>{deleteInfo(user)})
+  return updatedUser;
+}
+
 function deleteInfo(user){
   delete user.password;
   delete user.streamKey;
@@ -153,6 +192,8 @@ function deleteInfo(user){
      followToUser,
      unfollowFromUser,
      generateNewStreamKey,
-     update
+     update,
+     addTag,
+     removeTag
  };
 

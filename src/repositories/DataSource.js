@@ -18,6 +18,7 @@ const AppDataSource = new typeorm.DataSource({
         require("../entity/Type.js"),
         require("../entity/Penalty.js"),
         require("../entity/Category.js"),
+        require("../entity/Tag.js"),
     ],
     migrations: ["migration/**/*.js"],
     cli: {

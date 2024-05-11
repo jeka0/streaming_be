@@ -91,6 +91,24 @@ async function unfollowFromUser(req, res){
     .catch((err)=>res.status(400).send(err.message));
 }
 
+async function addTag(req, res){
+    const { name } = req.body;
+    const userId = req.userId;
+
+    userService.addTag(userId, name)
+    .then((results)=>res.send(results))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
+async function removeTag(req, res){
+    const { id } = req.params;
+    const userId = req.userId;
+
+    userService.removeTag(userId, id)
+    .then((results)=>res.send(results))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
 module.exports = {
     getAllUsers,
     getCurrentUser,
@@ -101,5 +119,7 @@ module.exports = {
     getUserByLogin,
     followToUser,
     unfollowFromUser,
-    generateNewStreamKey
+    generateNewStreamKey,
+    addTag,
+    removeTag
 };
