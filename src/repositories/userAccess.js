@@ -1,5 +1,4 @@
-const dbAccess = require("./DataSource.js")
-const { ILike } = require("typeorm");
+const dbAccess = require("./DataSource.js");
 const userRep = dbAccess.AppDataSource.getRepository("User");
 
 async function createUser(user){
@@ -12,11 +11,11 @@ async function getAllUsers(){
 }
 
 async function searchUser(text){
-    return await userRep.find({
-        where:{
-            login: ILike(`%${text}%`)
-        }
-    })
+    return await userRep.createQueryBuilder("user")
+    .leftJoinAndSelect("user.tags", "tags")
+    .where("user.login ILIKE :text", { text: `%${text}%` })
+    .orWhere("tags.name ILIKE :text", { text: `%${text}%` })
+    .getMany();
 }
 
 async function getUserByID(id){
