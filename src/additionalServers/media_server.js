@@ -19,6 +19,7 @@ nms.on('prePublish', async (id, StreamPath, args) => {
 
         session.reject();
     } else {
+        streamSevice.finishStream(user.id);
         const settings = await settingsService.getSettingsByUserId(user.id);
         const name = formatToFile(session.connectTime);
         delete settings.id;

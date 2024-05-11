@@ -41,7 +41,9 @@ const byKey = {
 const pagination = {
     [Segments.QUERY]: Joi.object().keys({
         page: Joi.number().required(),
-        limit: Joi.number().required()
+        limit: Joi.number().required(),
+        order: Joi.string().default("DESC"),
+        category: Joi.string()
     })
 }
 

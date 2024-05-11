@@ -124,18 +124,27 @@ async function deleteStream(id, userId){
     return deletedStream;
 }
 
-async function paginationLive(page, limit){
+async function paginationLive(page, limit, order, category){
     const skip= (page-1) * limit;
-    const result = await streamAccess.getLiveRange(skip, limit);
+    const result = await streamAccess.getLiveRange(skip, limit, order, category);
 
     result.data.forEach(deleteInfo);
 
     return result;
 }
 
-async function paginationUser(userId, page, limit){
+async function paginationUser(userId, page, limit, order, category){
     const skip= (page-1) * limit;
-    const result = await streamAccess.getUserRange(userId, skip, limit);
+    const result = await streamAccess.getUserRange(userId, skip, limit, order, category);
+
+    result.data.forEach(deleteInfo);
+
+    return result;
+}
+
+async function paginationStream(page, limit, order, category){
+    const skip= (page-1) * limit;
+    const result = await streamAccess.getStreamRange(skip, limit, order, category);
 
     result.data.forEach(deleteInfo);
 
@@ -157,6 +166,7 @@ module.exports = {
     deleteStream,
     paginationLive,
     paginationUser,
+    paginationStream,
     finishStream,
     getLiveStreamByLogin,
     getStreamByRecording,

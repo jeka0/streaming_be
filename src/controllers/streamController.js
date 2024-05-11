@@ -75,18 +75,26 @@ async function deleteStream(req, res){
 }
 
 async function getLiveRange(req, res){
-    const { page, limit } = req.query;
+    const { page, limit, order, category } = req.query;
 
-    streamSevice.paginationLive(page, limit)
+    streamSevice.paginationLive(page, limit, order, category)
     .then((result)=>res.send(result))
     .catch((err)=>res.status(400).send(err.message));
 }
 
 async function getUserRange(req, res){
-    const { page, limit } = req.query;
+    const { page, limit, order, category } = req.query;
     const { id } = req.params;
 
-    streamSevice.paginationUser(id, page, limit)
+    streamSevice.paginationUser(id, page, limit, order, category)
+    .then((result)=>res.send(result))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
+async function getStreamRange(req, res){
+    const { page, limit, order, category } = req.query;
+
+    streamSevice.paginationStream(page, limit, order, category)
     .then((result)=>res.send(result))
     .catch((err)=>res.status(400).send(err.message));
 }
@@ -101,6 +109,7 @@ module.exports = {
     deleteStream,
     getLiveRange,
     getUserRange,
+    getStreamRange,
     getLiveStreamByName,
     getStreamByRecording
 };

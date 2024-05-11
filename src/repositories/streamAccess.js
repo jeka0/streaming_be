@@ -12,7 +12,7 @@ async function getLiveStreams(){
             end_time: IsNull()
         }, 
         relations:['user', 'category'],
-        order: {id: 'DESC'}
+        order: {start_time: 'DESC'}
     });
 }
 
@@ -42,7 +42,7 @@ async function getUserStreams(userId){
             }
         },
         relations:['user', 'category'],
-        order: {id: 'DESC'}
+        order: {start_time: 'DESC'}
     });
 }
 
@@ -71,16 +71,22 @@ async function updateStream(id, data){
     }, data)
 }
 
-async function getLiveRange(skip, take){
-    const [result, total] = await streamRep.findAndCount({ 
+async function getLiveRange(skip, take, order, category){
+    const config = { 
         skip,
         take,
         where:{
-            end_time: null
+            end_time: null,
         },
         relations:['user', 'category'],
-        order: {id: 'DESC'}
-    });
+        order: {start_time: order}
+    }
+
+    if(category) config.where.category = {
+        name: category
+    }
+
+    const [result, total] = await streamRep.findAndCount(config);
 
     return {
         data: result,
@@ -88,8 +94,8 @@ async function getLiveRange(skip, take){
     }
 }
 
-async function getUserRange(userId, skip, take){
-    const [result, total] = await streamRep.findAndCount({ 
+async function getUserRange(userId, skip, take, order, category){
+    const config = { 
         skip,
         take,
         where:{
@@ -98,8 +104,36 @@ async function getUserRange(userId, skip, take){
             }
         },
         relations:['user', 'category'],
-        order: {id: 'DESC'}
-    });
+        order: {start_time: order}
+    }
+
+    if(category) config.where.category = {
+        name: category
+    }
+
+    const [result, total] = await streamRep.findAndCount(config);
+
+    return {
+        data: result,
+        total
+    }
+}
+
+async function getStreamRange(skip, take, order, category){
+    const config = { 
+        skip,
+        take,
+        relations:['user', 'category'],
+        order: {start_time: order}
+    }
+
+    if(category) config.where = {
+        category:{
+            name: category
+        }
+    }
+
+    const [result, total] = await streamRep.findAndCount(config);
 
     return {
         data: result,
@@ -117,5 +151,6 @@ module.exports = {
     getLiveRange,
     getUserRange,
     getLiveUserStreams,
-    getStreamByRecording
+    getStreamByRecording,
+    getStreamRange
 };
