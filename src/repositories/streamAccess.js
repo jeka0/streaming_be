@@ -76,7 +76,7 @@ async function getLiveRange(skip, take, order, category){
         skip,
         take,
         where:{
-            end_time: null,
+            end_time: IsNull(),
         },
         relations:['user', 'category'],
         order: {start_time: order}
