@@ -28,7 +28,7 @@ module.exports = new EntitySchema({
             type: "many-to-one",
             joinTable: true,
             cascade: true,
-            onDelete: 'cascade'
+            onDelete: 'SET NULL'
         },
         chat: {
             target: "Chat",

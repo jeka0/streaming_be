@@ -14,9 +14,7 @@ nms.on('prePublish', async (id, StreamPath, args) => {
     let user_name = getStreamNameFromStreamPath(StreamPath);
     const user = await getUserByLogin(user_name);
     const session = nms.getSession(id);
-
     if (!user  || !args.secret || user.streamKey !== args.secret) {
-
         session.reject();
     } else {
         streamSevice.finishStream(user.id);

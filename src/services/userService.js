@@ -115,7 +115,7 @@ async function createUser(user){
 
   if(!follower.subscription.some((u)=>u.id===streamer.id))follower.subscription.push(streamer);
   const updatedFollower = await userAccess.createUser(follower);
-  deleteInfo(updatedFollower)
+  delete updatedFollower.password;
   updatedFollower.subscription.forEach((user, index)=>{deleteInfo(user)})
   return updatedFollower;
  }
@@ -132,7 +132,7 @@ async function createUser(user){
     follower.subscription.splice(index, 1);
   }
   const updatedFollower = await userAccess.createUser(follower);
-  deleteInfo(updatedFollower)
+  delete updatedFollower.password;
   updatedFollower.subscription.forEach((user, index)=>{deleteInfo(user)})
   return updatedFollower;
 }
@@ -151,7 +151,7 @@ async function addTag(userId, tagName){
     throw new Error("Tag already added");
   }
   const updatedUser = await userAccess.createUser(user);
-  deleteInfo(updatedUser)
+  delete updatedUser.password;
   updatedUser.subscription.forEach((user, index)=>{deleteInfo(user)})
   return updatedUser;
 }
@@ -170,7 +170,7 @@ async function removeTag(userId, tagId){
     throw new Error("This tag has not been added");
   }
   const updatedUser = await userAccess.createUser(user);
-  deleteInfo(updatedUser)
+  delete updatedUser.password;
   updatedUser.subscription.forEach((user, index)=>{deleteInfo(user)})
   return updatedUser;
 }
