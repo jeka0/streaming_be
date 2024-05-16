@@ -1,6 +1,6 @@
 const userAccess = require("../repositories/userAccess");
 const { getHesh } = require("../helpers/encrypt"); 
-const { deleteFile } = require("../helpers/fs");
+const { deleteFile, renameDir } = require("../helpers/fs");
 const { createChat, updateChat } = require("./chatService");
 const { generateStreamKey } = require("../helpers/streamKey");
 const { createSettings } = require('./streamSettingsService');
@@ -88,11 +88,17 @@ async function createUser(user){
      throw new Error("User is not found");
    }
 
+   if(user.status){
+    throw new Error("You can't update your login while streaming");
+   }
+
    if(data.login){
     const u = await getUserByLogin(data.login);
     if(u && u.login != user.login){
-        throw new Error("This login is already in use by another account");
+      throw new Error("This login is already in use by another account");
     }
+
+    renameDir(user.login, data.login).then(()=>console.log("Directory successfully updated"))
    }
 
    if(data.image)deleteFile(user.image);

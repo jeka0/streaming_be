@@ -1,5 +1,5 @@
 const fs = require('fs');
-const DIR = "Images/", DIR2 = "server/thumbnails/";
+const DIR = "Images/", DIR2 = "server/thumbnails/", DIR3 = "server/media/live/";
 
 const deleteFile = (imageName)=>{
     if(!fs.existsSync(DIR + imageName))return;
@@ -30,8 +30,19 @@ fs.copyFile(DIR2+oldFile, DIR2+copyFile, (err) => {
 });
 }
 
+async function renameDir(oldName, newName) {
+    try{
+        await fs.rename(DIR3+oldName, DIR3+newName,() => {
+            console.log("\nDir Renamed!\n");
+        });
+    }catch(err){
+        console.log(err)
+    }
+}
+
 module.exports = {
     deleteFile,
     createImages,
-    copyImage
+    copyImage,
+    renameDir
 }
