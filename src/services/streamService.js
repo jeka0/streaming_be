@@ -14,10 +14,9 @@ async function createStream(userId, data){
 
 async function finishStream(userId){
     const streams = await streamAccess.getLiveUserStreams(userId);
-    streams.forEach((stream)=>{
-        streamAccess.updateStream(stream.id, { end_time: new Date() });
-    })
-
+    await Promise.all(streams.map(async (stream)=>{
+        await streamAccess.updateStream(stream.id, { end_time: new Date() });
+    }))
 }
 
 async function getStream(id){
