@@ -17,13 +17,13 @@ nms.on('prePublish', async (id, StreamPath, args) => {
     if (!user  || !args.secret || user.streamKey !== args.secret) {
         session.reject();
     } else {
-        streamSevice.finishStream(user.id);
+        await streamSevice.finishStream(user.id);
         const settings = await settingsService.getSettingsByUserId(user.id);
         const name = formatToFile(session.connectTime);
         delete settings.id;
-        streamSevice.createStream( user.id, { ...settings, recording_file: `${name}.mp4`});
+        await streamSevice.createStream( user.id, { ...settings, recording_file: `${name}.mp4`});
         user.status = true;
-        console.log(await userService.update(user));
+        await userService.update(user);
         delete user.password;
         sendStartAlert(user);
         console.log('[NodeEvent on prePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
@@ -39,7 +39,7 @@ nms.on('preConnect', async (id, args) => {
         let user_name = getStreamNameFromStreamPath(args.streamPath);
         const stream = await streamSevice.getLiveStreamByLogin(user_name);
         stream.viewer_count++;
-        console.log(await streamSevice.update(stream));
+        await streamSevice.update(stream);
         sendViewers(stream);
     }
     console.log('[NodeEvent on preConnect]', `id=${id} args=${JSON.stringify(args)}`);
@@ -50,7 +50,7 @@ nms.on('doneConnect', async (id, args) => {
         let stream_name = getStreamNameFromStreamPath(args.streamPath);
         const stream = await streamSevice.getLiveStreamByLogin(stream_name);
         stream.viewer_count--;
-        console.log(await streamSevice.update(stream));
+        await streamSevice.update(stream);
         sendViewers(stream);
     }
   console.log('[NodeEvent on doneConnect]', `id=${id} args=${JSON.stringify(args)}`);
@@ -59,9 +59,9 @@ nms.on('doneConnect', async (id, args) => {
 nms.on('donePublish', async (id, StreamPath, args) => {
     let stream_name = getStreamNameFromStreamPath(StreamPath);
     const user = await getUserByLogin(stream_name);
-    streamSevice.finishStream(user.id);
+    await streamSevice.finishStream(user.id);
     user.status = false;
-    console.log(await userService.update(user));
+    await userService.update(user);
     delete user.password;
     sendEndAlert(user);
     console.log('[NodeEvent on donePublish]', `id=${id} StreamPath=${StreamPath} args=${JSON.stringify(args)}`);
