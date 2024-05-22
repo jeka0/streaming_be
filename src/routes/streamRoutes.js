@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {celebrate} = require('celebrate');
 const streamSchems = require("../validation/streamSchems")
+const { checkAdminRole } = require("../middlewares/checkAuth");
 
 const {
     createStream, 
@@ -17,7 +18,7 @@ const {
     getStreamByRecording
 } = require('../controllers/streamController');
 
-router.post('/', celebrate(streamSchems.create), createStream);
+router.post('/', checkAdminRole, celebrate(streamSchems.create), createStream);
 router.get('/live', getLiveStreams);
 router.post('/live/name', celebrate(streamSchems.bodyName), getLiveStreamByName)
 router.get('/streams', celebrate(streamSchems.pagination), getStreamRange)
@@ -27,7 +28,7 @@ router.get('/recording/:name', celebrate(streamSchems.name), getStreamByRecordin
 router.get('/:id', celebrate(streamSchems.id), getStream);
 router.get('/', getCurrentUserStreams);
 router.get('/user/:id', celebrate(streamSchems.id), getUserStreams);
-router.put('/:id', celebrate(streamSchems.id), celebrate(streamSchems.update), updateStream);
+router.put('/:id', checkAdminRole, celebrate(streamSchems.id), celebrate(streamSchems.update), updateStream);
 router.delete('/:id',  celebrate(streamSchems.id), deleteStream);
 
 module.exports = router;

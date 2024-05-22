@@ -51,6 +51,12 @@ module.exports = new EntitySchema({
             type: "many-to-many",
             joinTable: true,
             cascade: true,
+        },
+        role: {
+            target: "Role",
+            type: "many-to-one",
+            joinTable: true,
+            cascade: true,
         }
     }
 })

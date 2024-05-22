@@ -11,7 +11,8 @@ const categoryRoutes = require("./categoryRoutes.js");
 const tagRoutes = require("./tagRoutes.js");
 const statusRoutes = require("./statusRoutes.js");
 const penaltyRoutes = require("./penaltyRoutes.js");
-const { checkAuth } = require('../middlewares/checkAuth.js');
+const { checkAuth, checkAdminRole } = require('../middlewares/checkAuth.js');
+const roleRoutes = require("./roleRoutes.js");
 
 router.use('/image', express.static('Images'));
 router.use('/thumbnail', express.static('server/thumbnails'));
@@ -22,10 +23,11 @@ router.use('/chat', checkAuth, chatRoutes);
 router.use('/message', checkAuth, messageRoutes);
 router.use('/stream', checkAuth, streamRoutes);
 router.use('/settings', checkAuth, streamSettingsRoutes);
-router.use('/type', checkAuth, typeRoutes);
 router.use('/category', checkAuth, categoryRoutes);
 router.use('/tag', checkAuth, tagRoutes);
-router.use('/status', checkAuth, statusRoutes);
-router.use('/penalty', checkAuth, penaltyRoutes);
+router.use('/penalty', checkAuth, checkAdminRole, penaltyRoutes);
+router.use('/role', checkAuth, checkAdminRole, roleRoutes);
+router.use('/type', checkAuth, checkAdminRole, typeRoutes);
+router.use('/status', checkAuth, checkAdminRole, statusRoutes);
 
 module.exports = router;

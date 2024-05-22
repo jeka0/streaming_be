@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const {celebrate} = require('celebrate');
 const chatSchems = require("../validation/chatSchems");
+const { checkAdminRole } = require("../middlewares/checkAuth");
 
 const { createChat, getAllChats, getUserChats, searchChat, deleteChat, updateChat, getChat, getChatByName, joinUser, leaveUser, getAllModersByChat } = require('../controllers/chatController.js');
 
@@ -12,9 +13,9 @@ router.post('/join/:id', celebrate(chatSchems.id), celebrate(chatSchems.moderati
 router.post('/leave/:id', celebrate(chatSchems.id), celebrate(chatSchems.moderation), leaveUser);
 router.post('/', celebrate(chatSchems.getByName), getChatByName);
 router.post('/search', celebrate(chatSchems.getByName), searchChat);
-router.post('/create', celebrate(chatSchems.create), createChat)
-router.put('/:id', celebrate(chatSchems.id), celebrate(chatSchems.update), updateChat);
-router.delete('/:id', celebrate(chatSchems.id), deleteChat);
+router.post('/create', checkAdminRole, celebrate(chatSchems.create), createChat)
+router.put('/:id', checkAdminRole, celebrate(chatSchems.id), celebrate(chatSchems.update), updateChat);
+router.delete('/:id', checkAdminRole, celebrate(chatSchems.id), deleteChat);
 
 
 module.exports = router;

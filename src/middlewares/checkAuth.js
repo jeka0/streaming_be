@@ -1,4 +1,5 @@
 const jwt = require('../helpers/jwt.js');
+const userService = require('../services/userService.js')
 require('dotenv').config();
 
 const accessTokenSecret = process.env.JWT_ACCESS_KEY;
@@ -28,7 +29,23 @@ const checkSocketAuth = (socket, next) => {
     }
 }
 
+const checkAdminRole = async (req, res, next) => {
+    const userId = req.userId;
+    try{
+        const user = await userService.getUserByID(userId);
+        if(user.role.name === "Admin" || user.role.name === "SuperAdmin"){
+            next();
+        }else{
+            throw new Error("Access denied");
+        }
+    }catch(err){
+        console.log(`Access denied for user: ${userId}`);
+        next(new Error("Access denied"));
+    }
+}
+
 module.exports = {
     checkAuth,
     checkSocketAuth,
+    checkAdminRole,
 };
