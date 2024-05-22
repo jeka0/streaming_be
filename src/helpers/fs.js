@@ -10,6 +10,20 @@ const deleteFile = (imageName)=>{
     });
 }
 
+const deleteF = (dir, file)=>{
+    if(!fs.existsSync(dir + file))return;
+    fs.unlink(dir + file, (err) => {
+        if (err) {
+            throw err;
+        }
+    });
+}
+
+const deleteMedia = (thumbnailName, videoName)=>{
+    deleteF(DIR2, thumbnailName);
+    deleteF(DIR3, videoName);
+}
+
 const createImages = ()=>{
     if(fs.existsSync(DIR))return;
     fs.mkdir(DIR, (err) => {
@@ -44,5 +58,6 @@ module.exports = {
     deleteFile,
     createImages,
     copyImage,
-    renameDir
+    renameDir,
+    deleteMedia
 }

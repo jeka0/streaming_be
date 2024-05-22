@@ -1,6 +1,7 @@
 const streamAccess = require("../repositories/streamAccess");
 const { getUserByID, getUserByLogin } = require("./userService");
 const { getCategoryByName } = require("./categoryService");
+const { deleteMedia } = require('../helpers/fs');
 
 async function createStream(userId, data){
     data.start_time = new Date();
@@ -112,6 +113,12 @@ async function deleteStream(id, userId){
 
     if(stream.user.id !== userId){
         throw new Error("Access denied");
+    }
+    
+    if(stream.recording_file){
+        const thumbnail = `${stream.recording_file.split('.')[0]}.png`;
+        const video = `${stream.user.login}/${stream.recording_file}`;
+        deleteMedia(thumbnail, video);
     }
 
     const deletedStream = await streamAccess.deleteStream(id);
