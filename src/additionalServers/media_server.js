@@ -1,20 +1,26 @@
 const { getUserByLogin } = require('../services/userService');
 const { generateStreamThumbnail, delay } =require('../helpers/thumbnail');
-const { formatToFile } = require('../helpers/dateFormat') 
+const { formatToFile } = require('../helpers/dateFormat');
 const streamSevice = require('../services/streamService');
 const userService = require('../services/userService');
 const settingsService = require('../services/streamSettingsService')
-const NodeMediaServer = require('node-media-server'),
-    config = require('../../config/default').rtmp_server;
+const NodeMediaServer = require('node-media-server');
 const { sendEndAlert, sendStartAlert, sendViewers } = require('./socketServer');
+const { checkGlobalPenlaty } = require('../services/penaltyService');
+const config = require('../../config/default'),
+port = config.rtmp_server.http.port;
  
-nms = new NodeMediaServer(config);
+nms = new NodeMediaServer(config.rtmp_server);
  
 nms.on('prePublish', async (id, StreamPath, args) => {
     let user_name = getStreamNameFromStreamPath(StreamPath);
     const user = await getUserByLogin(user_name);
     const session = nms.getSession(id);
-    if (!user  || !args.secret || user.streamKey !== args.secret) {
+    if (!user  || 
+        !args.secret || 
+        user.streamKey !== args.secret ||
+        await checkGlobalPenlaty(user.id, "GlobalBan")
+    ) {
         session.reject();
     } else {
         await streamSevice.finishStream(user.id);
@@ -35,7 +41,7 @@ nms.on('prePublish', async (id, StreamPath, args) => {
 });
 
 nms.on('preConnect', async (id, args) => {
-    if(args.streamPath){
+    if(args?.streamPath){
         let user_name = getStreamNameFromStreamPath(args.streamPath);
         const stream = await streamSevice.getLiveStreamByLogin(user_name);
         stream.viewer_count++;
@@ -46,7 +52,7 @@ nms.on('preConnect', async (id, args) => {
 });
 
 nms.on('doneConnect', async (id, args) => {
-    if(args.streamPath){
+    if(args?.streamPath){
         let stream_name = getStreamNameFromStreamPath(args.streamPath);
         const stream = await streamSevice.getLiveStreamByLogin(stream_name);
         stream.viewer_count--;
@@ -71,5 +77,17 @@ const getStreamNameFromStreamPath = (path) => {
     let parts = path.split('/');
     return parts[parts.length - 1];
 };
+
+const terminateSession = (userName)=>{
+    for(const [key, value] of nms.nts.transSessions.entries()){
+        if(value.conf.streamName === userName){
+            nms.getSession(key).reject();
+            break;
+        }
+    }
+}
  
-module.exports = nms;
+module.exports = {
+    node_media_server: nms,
+    terminateSession
+};

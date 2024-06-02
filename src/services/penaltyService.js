@@ -44,11 +44,52 @@ async function createPenalty(data){
     return penalty;
 }
 
+async function createGlobalPenalty(userId, ownerId){
+    if(userId === ownerId){
+        throw new Error("Error banning yourself");
+    }
+
+    const checkPenalty = await checkGlobalPenlaty(userId, "GlobalBan");
+
+    if(checkPenalty){
+        throw new Error(`The GlobalBan has already been imposed!`);
+    }
+
+    const newPenalty = {
+        datetime: new Date()
+    }
+    newPenalty.owner = await getUserByID(ownerId);
+    newPenalty.user = await getUserByID(userId);
+    newPenalty.type = await getTypeByCode("GlobalBan");
+    newPenalty.status = await getStatusByCode("active");
+
+    const penalty = await penaltyAccess.createPenalty(newPenalty)
+
+    if(!penalty){
+        throw new Error("Error creating Penalty");
+    }
+    deleteInfo(penalty);
+
+    return penalty;
+}
+
 async function getPenaltyById(id){
     const penalty = await penaltyAccess.getPenaltyById(id);
 
     if(!penalty){
         throw new Error("Penalty not found");
+    }
+
+    deleteInfo(penalty);
+
+    return penalty;
+}
+
+async function checkGlobalPenlaty(userId, type){
+    const penalty = await penaltyAccess.getPenaltyByUser(userId, "active", type);
+
+    if(!penalty){
+       return false;
     }
 
     deleteInfo(penalty);
@@ -164,9 +205,17 @@ async function deletePenalty(id, userId){
     return await penaltyAccess.deletePenalty(id);
 }
 
+async function paginationPenalty(skip, take, data){
+    const result = await penaltyAccess.paginationPenalty(skip, take, data);
+    result.data.map(penalty=>deleteInfo(penalty));
+    return result
+ }
+
 function deleteInfo(penalty){
     delete penalty.user.password;
     delete penalty.user.streamKey;
+    delete penalty.owner.password;
+    delete penalty.owner.streamKey;
 }
 
 
@@ -181,5 +230,8 @@ module.exports = {
     updatePenalty,
     deletePenalty,
     checkPenalty,
-    update
+    checkGlobalPenlaty,
+    update,
+    createGlobalPenalty,
+    paginationPenalty
 };

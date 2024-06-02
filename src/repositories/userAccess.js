@@ -2,12 +2,26 @@ const dbAccess = require("./DataSource.js");
 const userRep = dbAccess.AppDataSource.getRepository("User");
 
 async function createUser(user){
-    console.log(user + "s")
    return await userRep.save(user)
 }
 
 async function getAllUsers(){
-    return await userRep.find()
+    return await userRep.find();
+}
+
+async function paginationUsers(skip, take, data){
+    const config = {
+        where: data,
+        skip,
+        take
+    }
+
+    const [result, total] = await userRep.findAndCount(config);
+
+    return {
+        data: result,
+        total
+    }
 }
 
 async function searchUser(text){
@@ -50,7 +64,6 @@ async function deleteUser(id){
 }
 
 async function updateUser(id, data){
-    console.log(data)
     return await userRep.update({ id }, data)
 }
 
@@ -62,5 +75,6 @@ module.exports = {
     getUserByLogin,
     deleteUser,
     updateUser,
-    getUserByStreamKey
+    getUserByStreamKey,
+    paginationUsers
 };

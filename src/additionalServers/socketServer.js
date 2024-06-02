@@ -4,7 +4,7 @@ const { createMessage, deleteMessage, updateMessage } = require('../services/mes
 const { parseCommand } = require('../helpers/commands');
 const { checkMessage } = require('../middlewares/messageValidation');
 const { callCommand } = require('../services/commandService');
-const { checkPenalty, getPenaltyByUserAndChat, getAllPenaltys, update } = require('../services/penaltyService');
+const { checkPenalty, getPenaltyByUserAndChat, getAllPenaltys, update, checkGlobalPenlaty } = require('../services/penaltyService');
 require('dotenv').config();
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 const io = require("socket.io")(server, {
@@ -19,7 +19,10 @@ io.on('connection', client => {
   client.on("message", ({ chatId, message }) =>{
     const info = parseCommand(message);
     if(info.isCommand){
-      callCommand(info, client.userId, chatId).then((result)=>{
+      checkBan(client.userId).then(()=>{
+        return callCommand(info, client.userId, chatId)
+      })
+      .then((result)=>{
         if(result.type === "timeout")timeoutsManager();
         userInChat(chatId, result.userId, result.type, result.time);
         client.emit("info", { message: result.message, chatId});
@@ -27,7 +30,9 @@ io.on('connection', client => {
         client.emit("fail",  { message: err.message, chatId});
       });
     }else{
-      checkPenalty(client.userId, chatId)
+      checkBan(client.userId).then(()=>{
+        return checkPenalty(client.userId, chatId)
+      })
       .then(()=>createMessage(client.userId, chatId, {message}))
       .then((savedMessage)=>{
         io.to(chatId).emit("message", savedMessage);
@@ -61,7 +66,10 @@ io.on('connection', client => {
   });
 
   client.on("update", ({ chatId, message, id }) =>{
-    updateMessage(id, client.userId, { message }).then((updatedMessage)=>{
+    checkBan(client.userId).then(()=>{
+      return updateMessage(id, client.userId, { message })
+    })
+    .then((updatedMessage)=>{
       io.to(chatId).emit("update", updatedMessage);
     }).catch(err=>{
       client.emit("fail",  { message: err.message, chatId});
@@ -69,8 +77,10 @@ io.on('connection', client => {
   });
 
   client.on("delete", ({chatId, id}) =>{
-    console.log({chatId, id})
-    deleteMessage(id, client.userId).then(()=>{
+    checkBan(client.userId).then(()=>{
+      return deleteMessage(id, client.userId)
+    })
+    .then(()=>{
       io.to(chatId).emit("delete", {chatId, id});
     }).catch(err=>{
       client.emit("fail",  { message: err.message, chatId});
@@ -83,6 +93,14 @@ io.on('connection', client => {
     client.emit("error", err);
   })
 });
+
+const checkBan =async (userId)=>{
+  const result = await checkGlobalPenlaty(userId, "GlobalBan");
+  if(result){
+    throw new Error("User banned from the platform");
+  }
+  return result;
+}
 
 const userInChat = (chatId, userId, type, time)=>{
   io.to(chatId).emit(type, {userId, chatId, time});

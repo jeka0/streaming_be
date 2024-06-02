@@ -81,6 +81,14 @@ async function deletePenalty(req, res){
     .catch((err)=>res.status(400).send(err.message));
 }
 
+async function checkGlobalPenlaty(req, res){
+    const { id } = req.params;
+
+    penaltyService.checkGlobalPenlaty(id, "GlobalBan")
+    .then((result)=>res.send(result))
+    .catch((err)=>res.status(400).send(err.message));
+}
+
 module.exports = {
     createPenalty,
     getPenaltyById,
@@ -90,5 +98,6 @@ module.exports = {
     getAllPenaltysByUser,
     getAllPenaltysByUserAndChat,
     updatePenalty,
-    deletePenalty
+    deletePenalty,
+    checkGlobalPenlaty
 };

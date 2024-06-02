@@ -25,7 +25,7 @@ const checkSocketAuth = (socket, next) => {
         next();
     } catch (err) {
         console.log("AccessToken is not valid");
-        next(new Error("AccessToken is not valid"));
+        res.status(401).send(new Error("AccessToken is not valid"));
     }
 }
 
@@ -33,14 +33,14 @@ const checkAdminRole = async (req, res, next) => {
     const userId = req.userId;
     try{
         const user = await userService.getUserByID(userId);
-        if(user.role.name === "Admin" || user.role.name === "SuperAdmin"){
+        if(user.role.name === "Admin"){
             next();
         }else{
             throw new Error("Access denied");
         }
     }catch(err){
         console.log(`Access denied for user: ${userId}`);
-        next(new Error("Access denied"));
+        res.status(400).send(err.message);
     }
 }
 

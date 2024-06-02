@@ -7,7 +7,7 @@ async function createPenalty(penalty){
 
 async function getAllPenaltys(status, type){
     const config = {
-        relations:['user', 'chat', 'type', 'status'],
+        relations:['user', 'chat', 'type', 'status', 'owner'],
          order: {datetime: 'DESC'}
     }
     if(status || type){
@@ -26,7 +26,7 @@ async function getAllPenaltysByChat(chatId, status, type){
                 id: chatId
             }
         }, 
-        relations:['user', 'chat', 'type', 'status'],
+        relations:['user', 'chat', 'type', 'status', 'owner'],
         order: {datetime: 'DESC'}
    }
 
@@ -43,7 +43,7 @@ async function getAllPenaltysByUser(userId){
                 id: userId
             }
         }, 
-        relations:['user', 'chat', 'type', 'status'],
+        relations:['user', 'chat', 'type', 'status', 'owner'],
         order: {datetime: 'DESC'}
    });
 }
@@ -58,7 +58,7 @@ async function getAllPenaltysByUserAndChat(userId, chatId){
                 id: chatId
             }
         }, 
-        relations:['user', 'chat', 'type', 'status'],
+        relations:['user', 'chat', 'type', 'status', 'owner'],
         order: {datetime: 'DESC'}
    });
 }
@@ -68,7 +68,7 @@ async function getPenaltyById(id){
         where:{
             id 
         }, 
-        relations:['user', 'chat', 'type', 'status'] 
+        relations:['user', 'chat', 'type', 'status', 'owner'] 
     });
 }
 
@@ -82,13 +82,46 @@ async function getPenaltyByUserAndChat(userId, chatId, status, type){
                 id: chatId
             }
         }, 
-        relations:['user', 'chat', 'type', 'status'] 
+        relations:['user', 'chat', 'type', 'status', 'owner'] 
     }
 
     if(status) config.where.status = { code: status };
     if(type) config.where.type = { code: type };
     
     return await penaltyRep.findOne(config);
+}
+
+async function getPenaltyByUser(userId, status, type){
+    const config = {
+        where:{
+            user:{
+                id: userId
+            }
+        }, 
+        relations:['user', 'chat', 'type', 'status', 'owner'] 
+    }
+
+    if(status) config.where.status = { code: status };
+    if(type) config.where.type = { code: type };
+    
+    return await penaltyRep.findOne(config);
+}
+
+async function paginationPenalty(skip, take, data){
+    const config = {
+        where: data,
+        skip,
+        take,
+        relations:['user', 'chat', 'type', 'status', 'owner'],
+        order: {datetime: 'DESC'}
+    }
+
+    const [result, total] = await penaltyRep.findAndCount(config);
+
+    return {
+        data: result,
+        total
+    }
 }
 
 async function deletePenalty(id){
@@ -109,6 +142,8 @@ module.exports = {
     getAllPenaltysByUserAndChat,
     getPenaltyById,
     getPenaltyByUserAndChat,
+    getPenaltyByUser,
     deletePenalty,
-    updatePenalty
+    updatePenalty,
+    paginationPenalty
 };

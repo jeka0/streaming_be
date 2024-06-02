@@ -11,12 +11,14 @@ const {
     getAllPenaltysByUser,
     getAllPenaltysByUserAndChat,
     updatePenalty,
-    deletePenalty
+    deletePenalty,
+    checkGlobalPenlaty
 } = require('../controllers/penaltyController');
 
 router.get('/all', getAllPenaltys);
 router.get('/chat/:id', celebrate(penaltySchems.id), getAllPenaltysByChat);
 router.get('/user/:id', celebrate(penaltySchems.id), getAllPenaltysByUser);
+router.get('/check/:id', celebrate(penaltySchems.id), checkGlobalPenlaty);
 router.get('/penaltys', celebrate(penaltySchems.query), getAllPenaltysByUserAndChat)
 router.get('/', celebrate(penaltySchems.query), getPenaltyByUserAndChat);
 router.get('/:id', celebrate(penaltySchems.id), getPenaltyById);

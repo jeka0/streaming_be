@@ -30,6 +30,12 @@ async function createUser(user){
     return users;
  }
 
+ async function paginationUsers(skip, take, data){
+    const result = await userAccess.paginationUsers(skip, take, data);
+    result.data.map(user=>deleteInfo(user));
+    return result
+ }
+
  async function searchUser(login){
   const users =  await userAccess.searchUser(login);
   users.map(user=>deleteInfo(user));
@@ -103,7 +109,6 @@ async function createUser(user){
 
    if(data.image)deleteFile(user.image);
    if(data.password)data.password = await getHesh(data.password);
-   console.log("USER UPDATED")
    return await userAccess.updateUser(id, data);
  }
 
@@ -200,6 +205,7 @@ function deleteInfo(user){
      generateNewStreamKey,
      update,
      addTag,
-     removeTag
+     removeTag,
+     paginationUsers
  };
 
