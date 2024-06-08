@@ -110,8 +110,9 @@ async function updateStream(id, userId, data){
 
 async function deleteStream(id, userId){
     const stream = await streamAccess.getStream(id);
+    const user = await getUserByID(userId);
 
-    if(stream.user.id !== userId){
+    if(stream.user.id !== userId && user.role.name !== 'Admin'){
         throw new Error("Access denied");
     }
     

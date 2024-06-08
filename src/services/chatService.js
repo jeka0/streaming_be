@@ -103,7 +103,6 @@ async function createChat(chat){
 
  async function joinUser(id, user, streamerId){
   const chat = await chatAccess.getChatByID(id);
-  console.log(chat)
   if(!chat){
     throw new Error("Chat not found");
   }

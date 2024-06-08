@@ -120,20 +120,29 @@ async function getUserRange(userId, skip, take, order, category){
 }
 
 async function getStreamRange(skip, take, order, category){
-    const config = { 
-        skip,
-        take,
-        relations:['user', 'category'],
-        order: {start_time: order}
+    const query = streamRep.createQueryBuilder('stream')
+        .leftJoinAndSelect('stream.user', 'user')
+        .leftJoinAndSelect('stream.category', 'category')
+        .skip(skip)
+        .take(take)
+        .orderBy('stream.start_time', order);
+
+    if (category) {
+        query.andWhere('category.name = :category', { category });
     }
 
-    if(category) config.where = {
-        category:{
-            name: category
-        }
-    }
+    query.andWhere(qb => {
+        const subQuery = qb.subQuery()
+            .select('penalty.id')
+            .from('penalty', 'penalty')
+            .leftJoinAndSelect('penalty.status', 'status')
+            .where('penalty.user_id = user.id')
+            .andWhere('status.code = :activeStatus')
+            .getQuery();
+        return `NOT EXISTS (${subQuery})`;
+    }).setParameter('activeStatus', 'active');
 
-    const [result, total] = await streamRep.findAndCount(config);
+    const [result, total] = await query.getManyAndCount();
 
     return {
         data: result,

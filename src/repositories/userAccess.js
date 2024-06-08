@@ -25,20 +25,50 @@ async function paginationUsers(skip, take, data){
 }
 
 async function searchUser(text){
-    return await userRep.createQueryBuilder("user")
+    const notBan = qb => {
+        const subQuery = qb.subQuery()
+            .select('penalty.id')
+            .from('Penalty', 'penalty')
+            .leftJoinAndSelect('penalty.status', 'status')
+            .where('penalty.user_id = user.id')
+            .andWhere('status.code = :activeStatus')
+            .getQuery();
+        return `NOT EXISTS (${subQuery})`;
+    };
+
+    const query =  await userRep.createQueryBuilder("user")
     .leftJoinAndSelect("user.tags", "tags")
     .where("user.login ILIKE :text", { text: `%${text}%` })
+    .andWhere(notBan)
     .orWhere("tags.name ILIKE :text", { text: `%${text}%` })
-    .getMany();
+    .andWhere(notBan)
+    .setParameter('activeStatus', 'active')
+    
+    return query.getMany();
 }
 
 async function getUserByID(id){
-    return await userRep.findOne({  
-        where:{
-            id 
-        }, 
-        relations:['chat', 'subscription', 'tags', 'role'] 
-    })
+    const notBan = qb => {
+        const subQuery = qb.subQuery()
+            .select('penalty.id')
+            .from('Penalty', 'penalty')
+            .leftJoinAndSelect('penalty.status', 'status')
+            .where('penalty.user_id = subscription.id')
+            .andWhere('status.code = :activeStatus')
+            .getQuery();
+        return `NOT EXISTS (${subQuery})`;
+    };
+
+    const query = userRep.createQueryBuilder("user")
+        .leftJoinAndSelect("user.chat", "chat")
+        .leftJoinAndSelect("user.subscription", "subscription")
+        .leftJoinAndSelect("user.tags", "tags")
+        .leftJoinAndSelect("user.role", "role")
+        .where("user.id = :id", { id })
+        .andWhere(notBan)
+        .setParameter("activeStatus", "active");
+
+    return await query.getOne();
 }
 
 async function getUserByStreamKey(streamKey){

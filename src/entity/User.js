@@ -57,6 +57,11 @@ module.exports = new EntitySchema({
             type: "many-to-one",
             joinTable: true,
             cascade: true,
+        },
+        penalties: {
+            target: "Penalty",
+            type: "one-to-many",
+            inverseSide: "user"
         }
     }
 })
