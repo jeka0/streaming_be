@@ -5,12 +5,14 @@ const { createChat, updateChat } = require("./chatService");
 const { generateStreamKey } = require("../helpers/streamKey");
 const { createSettings } = require('./streamSettingsService');
 const { getTagByName, getTagById } = require('./tagService');
+const { getRoleByName } = require('./roleService')
 
 async function createUser(user){
     user.password = await getHesh(user.password);
     const name = await getHesh(user.login.toString());
     user.chat = await createChat({ name });
     user.streamKey = generateStreamKey();
+    user.role = await getRoleByName('User');
     const streamer = await userAccess.createUser(user);
 
     await updateChat( user.chat.id,{ streamer });
@@ -18,10 +20,8 @@ async function createUser(user){
  }
 
  async function generateNewStreamKey(userId){
-    const user = await getUserByID(userId);
-    user.streamKey = generateStreamKey();
-    delete user.subscription;
-    return await userAccess.updateUser(userId, user);
+    const streamKey = generateStreamKey();
+    return await userAccess.updateUser(userId, { streamKey });
  }
  
  async function getAllUsers(){
