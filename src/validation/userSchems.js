@@ -14,8 +14,8 @@ const userLogin = {
 
 const update = {
     [Segments.BODY]: Joi.object().keys({
-        login: Joi.string(),
-        password: Joi.string(),
+        login: Joi.string().trim().lowercase().max(15),
+        password: Joi.string().trim().min(5),
         image: Joi.string(),
     }).required().min(1),
 }
